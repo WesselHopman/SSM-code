@@ -1,0 +1,3873 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 14.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    163174,       3865]
+NotebookOptionsPosition[    154606,       3723]
+NotebookOutlinePosition[    155041,       3740]
+CellTagsIndexPosition[    154998,       3737]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{"<<", "QMRITools`"}], "\n", 
+ RowBox[{"SetDirectory", "[", 
+  RowBox[{"NotebookDirectory", "[", "]"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.9146536110549927`*^9, 3.914653613916527*^9}, 
+   3.914656492697698*^9, {3.916307163144247*^9, 3.91630716342486*^9}, 
+   3.917263772771174*^9},
+ CellLabel->"In[1]:=",ExpressionUUID->"f5f94238-269e-3c4a-8067-74d9300eb207"],
+
+Cell[BoxData[
+ RowBox[{"SystemOpen", "@", 
+  RowBox[{"Last", "[", 
+   RowBox[{"PacletFind", "[", "\"\<QMRITools\>\"", "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.916291567866741*^9, 3.916291595999342*^9}, {
+   3.9172636469956703`*^9, 3.91726365964237*^9}, 3.9172638448956184`*^9, 
+   3.9172638796277065`*^9, 3.917263923768463*^9, 3.9172639563971653`*^9},
+ CellLabel->"In[3]:=",ExpressionUUID->"eef33ce1-5ce2-7f47-8ead-7e1345c7169e"],
+
+Cell[CellGroupData[{
+
+Cell["Functions", "Subsection",
+ CellChangeTimes->{{3.915006946760977*^9, 3.915006955288187*^9}, {
+  3.91500700052862*^9, 3.915007002458715*^9}, {3.916297626595325*^9, 
+  3.916297627554525*^9}, {3.917263973959999*^9, 
+  3.917263975004778*^9}},ExpressionUUID->"ab686e92-1a30-1342-8e8f-\
+1e5c993090e2"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "function", " ", "to", " ", "create", " ", "internal", " ", "wall", " ", 
+     "distance", " ", "form", " ", "binaray", " ", "segmentation"}], ",", " ", 
+    RowBox[{"helps", " ", "with", " ", "registration"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"DistanceMask", "[", "msk_", "]"}], ":=", 
+     RowBox[{
+      RowBox[{"Normal", "[", "msk", "]"}], 
+      RowBox[{"Clip", "[", 
+       RowBox[{
+        RowBox[{"Rescale", "[", 
+         RowBox[{
+          RowBox[{"1.1", "-", 
+           RowBox[{"Rescale", "[", 
+            RowBox[{"GaussianFilter", "[", 
+             RowBox[{
+              RowBox[{"Total", "@", 
+               RowBox[{"NestWhileList", "[", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"Erosion", "[", 
+                   RowBox[{"#", ",", "1"}], "]"}], "&"}], ",", 
+                 RowBox[{"Normal", "[", "msk", "]"}], ",", 
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"Total", "[", 
+                    RowBox[{"Flatten", "[", "#", "]"}], "]"}], ">", "0"}], 
+                   ")"}], "&"}]}], "]"}]}], ",", "3"}], "]"}], "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"0.1", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"0.2", ",", "1"}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1"}], "}"}]}], "]"}]}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "makes", " ", "a", " ", "mesh", " ", "of", " ", "a", " ", "binary", " ", 
+      "segmentation", " ", "\"\<data\>\"", " ", "with", " ", "size", " ", 
+      "\"\<vox\>\""}], ",", " ", 
+     RowBox[{
+     "the", " ", "mesch", " ", "resolution", " ", "\"\<res\>\"", " ", "is", 
+      " ", "given", " ", "in", " ", "mm"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"MakeRegionMesh", "[", 
+     RowBox[{"data_", ",", "vox_", ",", "res_"}], "]"}], ":=", 
+    RowBox[{"DiscretizeGraphics", "[", 
+     RowBox[{
+      RowBox[{"PlotContour", "[", 
+       RowBox[{"data", ",", "vox", ",", 
+        RowBox[{"ContourSmoothRadius", "->", "3"}], ",", 
+        RowBox[{"ContourResolution", "->", "res"}]}], "]"}], ",", 
+      RowBox[{"PlotTheme", "->", "\"\<LargeMesh\>\""}], ",", 
+      RowBox[{"SphericalRegion", "->", "True"}]}], "]"}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "efficient", " ", "way", " ", "of", " ", "plotting", " ", "mesh", " ", 
+     "with", " ", "or", " ", "without", " ", "points"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{"pts_", ",", "cell_"}], "]"}], ":=", 
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{"pts", ",", "cell", ",", "False"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{"pts_", ",", "cell_", ",", "show_"}], "]"}], ":=", 
+    RowBox[{"Show", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Show", "[", 
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"show", "=!=", "False"}], ",", 
+          RowBox[{"ListSpherePlot", "[", 
+           RowBox[{"pts", ",", 
+            RowBox[{"SphereColor", "->", 
+             RowBox[{"Darker", "@", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{"ColorQ", "[", "show", "]"}], ",", "show", ",", 
+                "Red"}], "]"}]}]}]}], "]"}], ",", 
+          RowBox[{"Graphics3D", "[", "]"}]}], "]"}], ",", 
+        RowBox[{"SphericalRegion", "->", "True"}], ",", 
+        RowBox[{"Boxed", "->", "False"}]}], "]"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"Show", "[", 
+       RowBox[{
+        RowBox[{"MeshRegion", "[", 
+         RowBox[{"pts", ",", "cell", ",", 
+          RowBox[{"PlotTheme", "->", "\"\<LargeMesh\>\""}], ",", 
+          RowBox[{"MeshCellStyle", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"0", ",", "All"}], "}"}], "\[Rule]", "None"}], ",", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"1", ",", "All"}], "}"}], "\[Rule]", 
+              RowBox[{"Darker", "@", "Red"}]}], ",", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"2", ",", "All"}], "}"}], "\[Rule]", "Red"}]}], 
+            "}"}]}]}], "]"}], ",", 
+        RowBox[{"Lighting", "->", "\"\<Neutral\>\""}], ",", 
+        RowBox[{"SphericalRegion", "->", "True"}], ",", 
+        RowBox[{"ImageSize", "->", "400"}]}], "]"}]}], "\[IndentingNewLine]", 
+     "]"}]}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "fit", " ", "the", " ", "eigensystem", " ", "to", " ", "points", " ", 
+     "using", " ", "n", " ", "eigenvectors"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"FitVariationVec", "[", 
+     RowBox[{"var_", ",", "mat_"}], "]"}], ":=", 
+    RowBox[{"FitVariationVec", "[", 
+     RowBox[{"var", ",", "mat", ",", "All"}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"FitVariationVec", "[", 
+     RowBox[{"var_", ",", "mat_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"var", ".", 
+     RowBox[{"PseudoInverse", "[", 
+      RowBox[{"mat", "[", 
+       RowBox[{"[", 
+        RowBox[{";;", "n"}], "]"}], "]"}], "]"}]}]}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "fit", " ", "the", " ", "eigensystem", " ", "to", " ", "points", " ", 
+     "using", " ", "n", " ", "eigenvectors", " ", "and", " ", "make", " ", 
+     "mesh", " ", "points"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"FitVariationPoints", "[", 
+     RowBox[{"var_", ",", "mean_", ",", "mat_"}], "]"}], ":=", 
+    RowBox[{"FitVariationPoints", "[", 
+     RowBox[{"var", ",", "mean", ",", "mat", ",", "All"}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"FitVariationPoints", "[", 
+     RowBox[{"var_", ",", "mean_", ",", "mat_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"mean", "+", 
+     RowBox[{"Partition", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"var", ".", 
+          RowBox[{"PseudoInverse", "[", 
+           RowBox[{"mat", "[", 
+            RowBox[{"[", 
+             RowBox[{";;", "n"}], "]"}], "]"}], "]"}]}], ")"}], ".", 
+        RowBox[{"mat", "[", 
+         RowBox[{"[", 
+          RowBox[{";;", "n"}], "]"}], "]"}]}], ",", "3"}], "]"}]}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"define", " ", "the", " ", "plot", " ", "function"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"vertexNormals", "[", 
+     RowBox[{"p_List", ",", "cells_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "t0", ",", "t1", ",", "t2", ",", "P", ",", "ux", ",", "uy", ",", "uz", 
+        ",", "vx", ",", "vy", ",", "vz"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"t0", ",", "t1", ",", "t2"}], "}"}], "=", 
+        RowBox[{"Transpose", "@", 
+         RowBox[{"cells", "[", 
+          RowBox[{"[", 
+           RowBox[{"All", ",", "1"}], "]"}], "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"P", "=", 
+        RowBox[{"SparseArray", "[", 
+         RowBox[{
+          RowBox[{"Join", "@@", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Transpose", "@", 
+               RowBox[{"{", 
+                RowBox[{"#", ",", 
+                 RowBox[{"Range", "@", 
+                  RowBox[{"Length", "@", "#"}]}]}], "}"}]}], "&"}], "/@", 
+             RowBox[{"{", 
+              RowBox[{"t0", ",", "t1", ",", "t2"}], "}"}]}], ")"}]}], "->", 
+          RowBox[{"ConstantArray", "[", 
+           RowBox[{"1", ",", 
+            RowBox[{"3", " ", 
+             RowBox[{"Length", "@", "t0"}]}]}], "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"ux", ",", "uy", ",", "uz"}], "}"}], "=", 
+        RowBox[{"Transpose", "[", 
+         RowBox[{
+          RowBox[{"p", "[", 
+           RowBox[{"[", "t1", "]"}], "]"}], "-", 
+          RowBox[{"p", "[", 
+           RowBox[{"[", "t0", "]"}], "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"vx", ",", "vy", ",", "vz"}], "}"}], "=", 
+        RowBox[{"Transpose", "[", 
+         RowBox[{
+          RowBox[{"p", "[", 
+           RowBox[{"[", "t2", "]"}], "]"}], "-", 
+          RowBox[{"p", "[", 
+           RowBox[{"[", "t0", "]"}], "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Normalize", "/@", 
+        RowBox[{"(", 
+         RowBox[{"P", ".", 
+          RowBox[{"Transpose", "@", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"uy", " ", "vz"}], "-", 
+              RowBox[{"uz", " ", "vy"}]}], ",", 
+             RowBox[{
+              RowBox[{"uz", " ", "vx"}], "-", 
+              RowBox[{"ux", " ", "vz"}]}], ",", 
+             RowBox[{
+              RowBox[{"ux", " ", "vy"}], "-", 
+              RowBox[{"uy", " ", "vx"}]}]}], "}"}]}]}], ")"}]}]}]}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"MakeColorMesh", "[", 
+     RowBox[{"points_", ",", "cells_", ",", "cols_"}], "]"}], ":=", 
+    RowBox[{"Graphics3D", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"EdgeForm", "[", "]"}], ",", 
+        RowBox[{"Opacity", "[", "1", "]"}], ",", 
+        RowBox[{"GraphicsComplex", "[", 
+         RowBox[{"points", ",", "cells", ",", 
+          RowBox[{"VertexNormals", "->", 
+           RowBox[{"vertexNormals", "[", 
+            RowBox[{"points", ",", "cells"}], "]"}]}], ",", 
+          RowBox[{"VertexColors", "->", "cols"}]}], "]"}]}], "}"}], ",", 
+      RowBox[{"SphericalRegion", "->", "True"}], ",", 
+      RowBox[{"Lighting", "->", "\"\<Neutral\>\""}]}], "]"}]}]}]}]], "Input",
+ CellChangeTimes->{
+  3.915000980705269*^9, 3.915001455195177*^9, {3.915174385151022*^9, 
+   3.915174392461256*^9}, {3.9162996680127106`*^9, 3.916299737766208*^9}, {
+   3.916300039292185*^9, 3.916300126782224*^9}, {3.916300177539188*^9, 
+   3.9163001786277485`*^9}, {3.916300225751301*^9, 3.91630024764991*^9}, {
+   3.916300442873289*^9, 3.916300455796713*^9}, {3.916300660751108*^9, 
+   3.9163006839074345`*^9}, {3.916305731071165*^9, 3.91630576169298*^9}, {
+   3.917272476133508*^9, 3.917272485567879*^9}, {3.919843050075964*^9, 
+   3.919843079973038*^9}, {3.9210736251210003`*^9, 3.921073626176111*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"aa992fba-9545-1646-abda-2a736dbc2980"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Steps", "Subsection",
+ CellChangeTimes->{{3.9162976416758385`*^9, 
+  3.9162976456491966`*^9}},ExpressionUUID->"97da6f15-58f7-8047-80e4-\
+e18bb06f23bb"],
+
+Cell["\<\
+1. For each muscle we must find a average shape that resembles most muscles \
+such that we can define mesh points for that shape
+\ta. Import all data change the resolution to 2x2x2 and make all matrix sizes \
+the same shape
+\tb. Try to find the common muscle shape by trying to align all individual \
+muscles
+2.  For shape analysis we need a common set of points that can be transferred \
+to each individual muscle space and be projected of the local mesh
+\ta. Create a common low resolution mesh (now 8mm, what happens if we used \
+higher resolution?
+\tb. Register the common muscle to local space and also transfer the mesh \
+points, this has an error so as a second step project the points onto the \
+local mesh.
+3. All muscles in local space now have the same number of linked points \
+describing their shape so that we can perform statistical shape modeling. 
+\ta. If all points are known we can perform the eigenvalue decomposition on \
+the covariance of the points.
+\tb. Evaluation of shape modeling\
+\>", "Text",
+ CellChangeTimes->{{3.9162976499086304`*^9, 3.916297701855059*^9}, {
+  3.916297799521461*^9, 3.916297799888447*^9}, {3.916297882318441*^9, 
+  3.916297935592068*^9}, {3.916300473814733*^9, 3.916300523063047*^9}, {
+  3.9163005643295383`*^9, 3.916300648878401*^9}, {3.916301805682913*^9, 
+  3.916301856962679*^9}, {3.916306643732907*^9, 
+  3.916306703774509*^9}},ExpressionUUID->"82a7b0bb-4141-1e46-a44a-\
+60eb665fab30"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["1. Make  muscle template", "Subsection",
+ CellChangeTimes->{{3.915006946760977*^9, 3.915006955288187*^9}, {
+  3.91500700052862*^9, 3.915007002458715*^9}, {3.9162986044363823`*^9, 
+  3.916298604615738*^9}},ExpressionUUID->"8bcb4523-c6ff-dc4b-9fa6-\
+136904a573c1"],
+
+Cell[CellGroupData[{
+
+Cell["labels", "Subsubsection",
+ CellChangeTimes->{{3.9163005304544525`*^9, 
+  3.9163005326563644`*^9}},ExpressionUUID->"0ad8ebe0-a6f6-1a4d-9670-\
+a1fad03ff446"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"muscle", " ", "labels"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"TableForm", "@", 
+   RowBox[{"Transpose", "@", 
+    RowBox[{"Reverse", "@", 
+     RowBox[{
+     "ImportITKLabels", "[", "\"\<Muscles_leg_upper.txt\>\"", 
+      "]"}]}]}]}]}]], "Input",
+ CellChangeTimes->{{3.9162986482755165`*^9, 3.91629869706344*^9}},
+ CellLabel->"In[13]:=",ExpressionUUID->"917f9001-a1e9-8147-bdf4-36f82cd3d9f4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["a. Import and normalize all data", "Subsubsection",
+ CellChangeTimes->{{3.915006946760977*^9, 3.915006955288187*^9}, {
+  3.91500700052862*^9, 3.915007002458715*^9}, {3.9162247701325493`*^9, 
+  3.916224773761661*^9}, {3.916298605904375*^9, 
+  3.916298606361988*^9}},ExpressionUUID->"2bc90720-4079-0948-805d-\
+3f9e218dbccf"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"segFol", "=", "\"\<Segment_Upper\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"n", "=", 
+    RowBox[{"Length", "@", 
+     RowBox[{"FileNames", "[", 
+      RowBox[{"\"\<*\>\"", ",", "segFol"}], "]"}]}]}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"segmenations", " ", "in", " ", "folder"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"vox", "=", 
+    RowBox[{"{", 
+     RowBox[{"6", ",", "1.5", ",", "1.5"}], "}"}]}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"data", " ", "resolution"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"voxTemplate", "=", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"template", " ", "resolution"}], "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.91465366074801*^9, 3.9146536688367043`*^9}, {
+   3.916224461051012*^9, 3.916224482459242*^9}, {3.916224631731327*^9, 
+   3.9162246452411385`*^9}, {3.9162977656812057`*^9, 
+   3.9162978229309444`*^9}, {3.916298819388481*^9, 3.916298824691685*^9}, 
+   3.916298940165746*^9, 3.9163066399173203`*^9, 3.918300109346592*^9, 
+   3.9185366443958054`*^9, 3.918536677766716*^9, {3.9189063667436905`*^9, 
+   3.918906368722449*^9}},
+ CellLabel->"In[14]:=",ExpressionUUID->"60057f34-ed57-7d42-ae80-47425fcfe222"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"choose", " ", "the", " ", "muscle", " ", "to", " ", "process"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"muscleNumber", "=", "5"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "rescale", " ", "all", " ", "the", " ", "data", " ", "to", " ", "new", 
+     " ", "resolution"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"muscleAll", "=", 
+     RowBox[{"Table", "[", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"import", " ", "the", " ", "segmentation"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"segementation", ",", "vox"}], "}"}], "=", 
+         RowBox[{"ImportNii", "[", 
+          RowBox[{"FileNameJoin", "[", 
+           RowBox[{"{", 
+            RowBox[{"segFol", ",", 
+             RowBox[{"\"\<Mot2_\>\"", "<>", 
+              RowBox[{"StringPadInteger", "[", "i", "]"}], "<>", 
+              "\"\<_label_NN.nii.gz\>\""}]}], "}"}], "]"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+         "select", " ", "segmentation", " ", "number", " ", "and", " ", 
+          "make", " ", "left", " ", "right"}], "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"muscle", "=", 
+         RowBox[{"First", "@", 
+          RowBox[{"AutoCropData", "[", 
+           RowBox[{"Unitize", "@", 
+            RowBox[{"SelectSegmentations", "[", 
+             RowBox[{"segementation", ",", 
+              RowBox[{"{", "muscleNumber", "}"}]}], "]"}]}], "]"}]}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"muscle", "=", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"OddQ", "[", "i", "]"}], ",", 
+           RowBox[{"Reverse", "[", 
+            RowBox[{"muscle", ",", "3"}], "]"}], ",", "muscle"}], "]"}]}], 
+        ";", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"recsale", " ", "and", " ", "smooth", " ", "segmenation"}], 
+         "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"Round", "[", 
+         RowBox[{
+          RowBox[{"RescaleData", "[", 
+           RowBox[{
+            RowBox[{"GaussianFilter", "[", 
+             RowBox[{"muscle", ",", "1"}], "]"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"vox", ",", "voxTemplate"}], "}"}], ",", 
+            RowBox[{"InterpolationOrder", "->", "1"}]}], "]"}], ",", "0.01"}],
+          "]"}]}], "\[IndentingNewLine]", ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "n"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"padd", " ", "to", " ", "consistant", " ", "dimensions"}], "*)"}],
+    "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"muscleAll", "=", 
+     RowBox[{"PadToDimensions", "[", "muscleAll", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "remove", " ", "rotations", " ", "and", " ", "translations", " ", 
+     "without", " ", "scaling", " ", "or", " ", 
+     RowBox[{
+      RowBox[{"deforming", " ", "--"}], "--"}], " ", "takes", " ", "a", " ", 
+     "while"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"muscleAll", "=", 
+     RowBox[{"Clip", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "@", 
+        RowBox[{"RegisterData", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Transpose", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"DistanceMask", "[", 
+                RowBox[{"3", "#"}], "]"}], "&"}], "/@", "muscleAll"}], "]"}], 
+            ",", "voxTemplate"}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"MethodReg", "->", 
+           RowBox[{"{", "\"\<PCArigid\>\"", "}"}]}], ",", 
+          RowBox[{"NumberSamples", "->", "1500"}], ",", 
+          RowBox[{"Resolutions", "->", "1"}], ",", 
+          RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Iterations", "->", "200"}], ",", 
+          RowBox[{"DeleteTempDirectory", "->", "False"}], ",", 
+          RowBox[{"TempDirectory", "->", "\"\<TempReg\>\""}]}], "]"}]}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0.5"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "]"}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.914653770877379*^9, 3.914653792397684*^9}, {
+   3.914653834576908*^9, 3.914653935916925*^9}, {3.914653972369886*^9, 
+   3.914653984004076*^9}, {3.914656474869703*^9, 3.914656486735166*^9}, {
+   3.914662191004887*^9, 3.914662233646677*^9}, {3.9146626640795*^9, 
+   3.914662665179229*^9}, {3.916224485901115*^9, 3.916224542685852*^9}, {
+   3.9162247105665283`*^9, 3.916224726542578*^9}, 3.916297807073246*^9, {
+   3.916298704884989*^9, 3.916298730844784*^9}, {3.9162987916990967`*^9, 
+   3.916298909023376*^9}, {3.916307217254881*^9, 3.916307236938904*^9}, {
+   3.91630850318312*^9, 3.916308509119726*^9}, {3.916308543343647*^9, 
+   3.9163085593433323`*^9}, {3.916309319060837*^9, 3.916309319440206*^9}, {
+   3.916309514595226*^9, 3.916309523251007*^9}, 3.916372633388718*^9, 
+   3.918299679982107*^9, {3.919840141746723*^9, 
+   3.919840144483303*^9}},ExpressionUUID->"c58ad0c3-0751-a04c-a25b-\
+969e4a62056e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", "\"\<Muscle_4_All.mx\>\"", "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.918536604274521*^9, 3.9185366293066387`*^9}, {
+  3.918536691066334*^9, 3.918536706195742*^9}, {3.918544857547432*^9, 
+  3.918544865907273*^9}, {3.918545004136644*^9, 3.91854500441844*^9}, {
+  3.918545034557602*^9, 3.918545034868733*^9}, {3.918545300868482*^9, 
+  3.918545301029037*^9}, {3.918545332728851*^9, 3.918545336776539*^9}},
+ CellLabel->"In[72]:=",ExpressionUUID->"a1755af0-564c-3548-9ceb-b1ae365ea973"],
+
+Cell[BoxData[
+ RowBox[{"PlotData", "[", 
+  RowBox[{
+   RowBox[{"Transpose", "@", "muscleAll"}], ",", "voxTemplate"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.916309385743431*^9, 3.916309397531788*^9}, {
+   3.91630943644207*^9, 3.916309472652413*^9}, 3.9182996898864136`*^9, {
+   3.918536572795658*^9, 3.918536575275648*^9}},
+ CellLabel->
+  "In[122]:=",ExpressionUUID->"2c2bc114-ca77-7546-ada2-34447c9f3427"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"DumpSave", "[", 
+   RowBox[{"\"\<muscleAll.mx\>\"", ",", "muscleAll"}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.914899768371788*^9, 3.9148997796036263`*^9}, 
+   3.914899890943777*^9, {3.9162987322784157`*^9, 3.916298733026312*^9}, {
+   3.916307254231203*^9, 3.9163072758952713`*^9}, {3.916308018691904*^9, 
+   3.916308023976772*^9}, 3.9182996862746735`*^9, 
+   3.921124008342621*^9},ExpressionUUID->"9c688657-1628-2a46-9c84-\
+2423812fe670"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["a.1. Import  and  normalize  all  data", "Subsubsection",
+ CellChangeTimes->{{3.918299757912747*^9, 3.918299770246321*^9}, 
+   3.918535905695806*^9, {3.921063433182735*^9, 
+   3.921063433731127*^9}},ExpressionUUID->"1a7ebe5a-04e7-3547-b1bd-\
+8d61d8e110d2"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Set", " ", "the", " ", "directory", " ", "to", " ", "the", " ", 
+    RowBox[{"notebook", "'"}], "s", " ", "directory"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"SetDirectory", "[", 
+     RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"segFol", "=", "\"\<Segment_Upper\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"n", "=", 
+     RowBox[{"Length", "@", 
+      RowBox[{"FileNames", "[", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"segFol", ",", "\"\<*\>\""}], "}"}], "]"}], "]"}]}]}], ";"}],
+    "  ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Number", " ", "of", " ", "segmentations", " ", "in", " ", "the", " ", 
+     "folder"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"vox", "=", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "1.5", ",", "1.5"}], "}"}]}], ";"}], "  ", 
+   RowBox[{"(*", 
+    RowBox[{"Original", " ", "data", " ", "resolution"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"voxTemplate", "=", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";"}], "  ", 
+   RowBox[{"(*", 
+    RowBox[{"Desired", " ", "template", " ", "resolution"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"muscleNumbers", "=", 
+     RowBox[{"Range", "[", "17", "]"}]}], ";"}], "  ", 
+   RowBox[{"(*", 
+    RowBox[{"Muscle", " ", "numbers", " ", "to", " ", "process"}], "*)"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Loop", " ", "over", " ", "each", " ", "muscle", " ", "number"}], 
+    "*)"}], "\n", 
+   RowBox[{"Monitor", "[", 
+    RowBox[{
+     RowBox[{"Do", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"muscleAll", "=", 
+         RowBox[{"Table", "[", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Import", " ", "the", " ", "segmentation", " ", "for", " ", 
+            "patient", " ", "i"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"segmentation", ",", "vox"}], "}"}], "=", 
+             RowBox[{"ImportNii", "[", 
+              RowBox[{"FileNameJoin", "[", 
+               RowBox[{"{", 
+                RowBox[{"segFol", ",", 
+                 RowBox[{"\"\<Mot2_\>\"", "<>", 
+                  RowBox[{"StringPadInteger", "[", "i", "]"}], "<>", 
+                  "\"\<_label_NN.nii.gz\>\""}]}], "}"}], "]"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "Select", " ", "segmentation", " ", "number", " ", "and", " ", 
+              "make", " ", "left", " ", "right"}], "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"muscle", "=", 
+             RowBox[{"First", "@", 
+              RowBox[{"AutoCropData", "[", 
+               RowBox[{"Unitize", "@", 
+                RowBox[{"SelectSegmentations", "[", 
+                 RowBox[{"segmentation", ",", 
+                  RowBox[{"{", "muscleNumber", "}"}]}], "]"}]}], "]"}]}]}], 
+            ";", "\[IndentingNewLine]", 
+            RowBox[{"muscle", "=", 
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{"OddQ", "[", "i", "]"}], ",", 
+               RowBox[{"Reverse", "[", 
+                RowBox[{"muscle", ",", "3"}], "]"}], ",", "muscle"}], "]"}]}],
+             ";", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "Rescale", " ", "and", " ", "smooth", " ", "segmentation"}], 
+             "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"Round", "[", 
+             RowBox[{
+              RowBox[{"RescaleData", "[", 
+               RowBox[{
+                RowBox[{"GaussianFilter", "[", 
+                 RowBox[{"muscle", ",", "1"}], "]"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"vox", ",", "voxTemplate"}], "}"}], ",", 
+                RowBox[{"InterpolationOrder", "->", "1"}]}], "]"}], ",", 
+              "0.01"}], "]"}]}], ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "1", ",", "n"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Pad", " ", "to", " ", "consistent", " ", "dimensions"}], 
+         "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"muscleAll", "=", 
+         RowBox[{"PadToDimensions", "[", "muscleAll", "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+         "Remove", " ", "rotations", " ", "and", " ", "translations", " ", 
+          "without", " ", "scaling", " ", "or", " ", "deforming"}], "*)"}], 
+        RowBox[{"muscleAll", "=", 
+         RowBox[{"Clip", "[", 
+          RowBox[{
+           RowBox[{"Transpose", "@", 
+            RowBox[{"RegisterData", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Transpose", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"DistanceMask", "[", 
+                    RowBox[{"3", " ", "#"}], "]"}], "&"}], "/@", 
+                  "muscleAll"}], "]"}], ",", "voxTemplate"}], "}"}], ",", 
+              RowBox[{"MethodReg", "->", 
+               RowBox[{"{", "\"\<PCArigid\>\"", "}"}]}], ",", 
+              RowBox[{"NumberSamples", "->", "1500"}], ",", 
+              RowBox[{"Resolutions", "->", "1"}], ",", 
+              RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+              RowBox[{"Iterations", "->", "200"}], ",", 
+              RowBox[{"DeleteTempDirectory", "->", "False"}], ",", 
+              RowBox[{"TempDirectory", "->", "\"\<TempReg\>\""}]}], "]"}]}], 
+           ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0.5"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "1"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+         "Save", " ", "the", " ", "processed", " ", "data", " ", "for", " ", 
+          "the", " ", "current", " ", "muscle"}], "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{"DumpSave", "[", 
+         RowBox[{
+          RowBox[{"\"\<Muscle_\>\"", "<>", 
+           RowBox[{"IntegerString", "[", "muscleNumber", "]"}], "<>", 
+           "\"\<_All.mx\>\""}], ",", "muscleAll"}], "]"}], ";"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"muscleNumber", ",", "muscleNumbers"}], "}"}]}], "]"}], ",", 
+     RowBox[{"\"\<Processing muscle \>\"", "<>", 
+      RowBox[{"ToString", "[", "muscleNumber", "]"}], "<>", "\"\< of \>\"", "<>", 
+      RowBox[{"ToString", "[", 
+       RowBox[{"Length", "[", "muscleNumbers", "]"}], "]"}]}]}], "]"}], 
+   "\n"}]}]], "Input",
+ CellChangeTimes->{{3.918299774299827*^9, 3.9182997948853226`*^9}, 
+   3.91834842785742*^9, {3.918536224505495*^9, 3.91853626835462*^9}, {
+   3.918536735175808*^9, 3.918536736185816*^9}, 3.918545087139431*^9, {
+   3.919840219090191*^9, 3.9198402224476776`*^9}, {3.919840321815262*^9, 
+   3.919840339066402*^9}, 3.9211240219606953`*^9, 
+   3.921136125086298*^9},ExpressionUUID->"c90c6c6c-9a8a-724c-9146-\
+f8ce5c104573"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["b. average muscle shape creation (most time consuming step)", \
+"Subsubsection",
+ CellChangeTimes->{{3.915006946760977*^9, 3.915006955288187*^9}, {
+  3.91500700052862*^9, 3.915007002458715*^9}, {3.9162247701325493`*^9, 
+  3.916224791001688*^9}, {3.9162978615078983`*^9, 3.916297867726387*^9}, {
+  3.916298610485718*^9, 3.9162986107138195`*^9}, {3.9163097320768547`*^9, 
+  3.91630973303631*^9}},ExpressionUUID->"ced42770-2b11-e947-95bd-\
+8feeede855df"],
+
+Cell[BoxData[
+ RowBox[{"<<", "muscleAll.mx"}]], "Input",
+ CellChangeTimes->{
+  3.91629898970697*^9, {3.916308005186743*^9, 3.916308009008087*^9}, 
+   3.918299706682064*^9, {3.919840361266264*^9, 
+   3.9198403639976883`*^9}},ExpressionUUID->"073f30f3-8696-5c4f-b118-\
+95ba855b9885"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "create", " ", "common", " ", "muscle", " ", "shape", " ", "based", " ", 
+    "on", " ", "distance", " ", "masks", " ", "of", " ", "all", " ", 
+    "subjects"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"muscleReg", "=", 
+     RowBox[{"RegisterData", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Transpose", "[", 
+          RowBox[{"DistanceMask", "/@", "muscleAll"}], "]"}], ",", 
+         "voxTemplate"}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"MethodReg", "->", 
+        RowBox[{"{", 
+         RowBox[{"\"\<PCAaffine\>\"", ",", "\"\<PCAbspline\>\""}], "}"}]}], 
+       ",", 
+       RowBox[{"NumberSamples", "->", "1500"}], ",", 
+       RowBox[{"Resolutions", "->", "1"}], ",", 
+       RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Iterations", "->", "250"}], ",", 
+       RowBox[{"DeleteTempDirectory", "->", "False"}], ",", 
+       RowBox[{"TempDirectory", "->", "\"\<TempReg\>\""}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"muscleMean", "=", 
+     RowBox[{"Closing", "[", 
+      RowBox[{
+       RowBox[{"Ceiling", "[", 
+        RowBox[{
+         RowBox[{"Mean", "@", 
+          RowBox[{"Transpose", "@", "muscleReg"}]}], "-", "0.2"}], "]"}], ",",
+        "6"}], "]"}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.914657300182318*^9, 3.914657305251339*^9}, 
+   3.914657412294491*^9, {3.914657469104686*^9, 3.914657486045896*^9}, {
+   3.9146575610261497`*^9, 3.9146575622551365`*^9}, {3.914657614684786*^9, 
+   3.9146576419349384`*^9}, {3.914657703185169*^9, 3.914657706985573*^9}, {
+   3.914657785326444*^9, 3.9146578104655647`*^9}, {3.914658293987777*^9, 
+   3.9146583133337*^9}, {3.914658410006736*^9, 3.914658455536022*^9}, 
+   3.914658652503408*^9, {3.914659070758384*^9, 3.914659084523205*^9}, 
+   3.9146591606493187`*^9, {3.914812663280659*^9, 3.914812677527817*^9}, {
+   3.914812712767046*^9, 3.914812719420961*^9}, 3.9148999003704834`*^9, {
+   3.916224360554537*^9, 3.916224363673868*^9}, {3.916224592011433*^9, 
+   3.916224600461092*^9}, {3.916224646926344*^9, 3.9162246863014946`*^9}, {
+   3.916292283071512*^9, 3.916292299814594*^9}, {3.916297756778591*^9, 
+   3.916297757017546*^9}, 3.916298831884743*^9, {3.916298997246992*^9, 
+   3.9162990072773914`*^9}, {3.916307758537409*^9, 3.916307763080965*^9}, {
+   3.916309499580591*^9, 3.916309499821892*^9}, {3.916309584288049*^9, 
+   3.916309586011837*^9}, 3.918299709895298*^9, {3.919840367476385*^9, 
+   3.919840369397667*^9}},ExpressionUUID->"495c4b5e-1793-7b4e-b7c5-\
+be8fc239c60b"],
+
+Cell[BoxData[{
+ RowBox[{"Get", "[", "\"\<MuscleMeanReg_1.mx\>\"", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Get", "[", "\"\<Muscle_1_All.mx\>\"", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.918536901244753*^9, 3.918536922534729*^9}, {
+  3.918545145587736*^9, 3.918545149056423*^9}, {3.9185452117978344`*^9, 
+  3.9185452120667305`*^9}, {3.918545345768772*^9, 3.918545364554554*^9}, {
+  3.918545405516571*^9, 3.9185454137074738`*^9}, {3.918545505078619*^9, 
+  3.918545509858482*^9}, {3.918546401693239*^9, 3.918546409648262*^9}, {
+  3.918546739977459*^9, 3.918546748338257*^9}, {3.9185468406938477`*^9, 
+  3.918546846298599*^9}, {3.91984037199259*^9, 3.919840373771017*^9}},
+ FontSize->14,ExpressionUUID->"a74cb093-4b42-0a47-9327-0835f946a1f2"],
+
+Cell[BoxData[
+ RowBox[{"PlotData", "[", 
+  RowBox[{"muscleReg", ",", 
+   RowBox[{"Transpose", "@", "muscleAll"}], ",", "voxTemplate"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.916292173020386*^9, 3.916292212853002*^9}, {
+   3.916292285960518*^9, 3.916292286106905*^9}, {3.916299012590336*^9, 
+   3.916299017664963*^9}, {3.916299124980242*^9, 3.916299127487425*^9}, 
+   3.918299721672918*^9, {3.918536488796486*^9, 3.9185364909165154`*^9}, {
+   3.918536855115771*^9, 3.918536883615418*^9}, {3.9185369327468376`*^9, 
+   3.918536934295334*^9}, {3.9198403754319305`*^9, 3.9198403772587376`*^9}},
+ FontSize->14,ExpressionUUID->"05e8dc89-1671-704c-9c63-081e0cc6ca4d"],
+
+Cell[BoxData[
+ RowBox[{"PlotData", "[", 
+  RowBox[{"muscleMean", ",", "voxTemplate"}], "]"}]], "Input",
+ CellChangeTimes->{{3.916299201018099*^9, 3.9162992119598503`*^9}, 
+   3.9182997252350597`*^9, {3.91853648420581*^9, 3.918536486514839*^9}, {
+   3.919840378817354*^9, 3.919840380656725*^9}},
+ FontSize->14,ExpressionUUID->"c7ab5144-1c81-2542-8cce-551cb73ca66b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"DumpSave", "[", 
+   RowBox[{"\"\<muscleReg.mx\>\"", ",", 
+    RowBox[{"{", 
+     RowBox[{"muscleReg", ",", "muscleMean"}], "}"}]}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.914899768371788*^9, 3.9148997796036263`*^9}, 
+   3.914899890943777*^9, {3.914900792867337*^9, 3.9149007935560074`*^9}, 
+   3.916299011084511*^9, 3.916299043478246*^9, {3.916299220652937*^9, 
+   3.916299223549165*^9}, 3.918299734079382*^9, {3.918536474515428*^9, 
+   3.918536481896572*^9}, 3.921124034550289*^9},
+ FontSize->14,ExpressionUUID->"4ab67870-92bd-1640-bdd9-22df7d7e3de1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+b.1 . average  muscle  shape  creation  (most  time  consuming  step)\
+\>", "Subsubsection",
+ CellChangeTimes->{{3.918299847095349*^9, 3.9182998498471603`*^9}, {
+   3.9182999827111797`*^9, 3.918299986477316*^9}, {3.918535899867987*^9, 
+   3.9185359000361557`*^9}, 
+   3.921063420807354*^9},ExpressionUUID->"2f85256e-9c9a-0a49-88f3-\
+1f343a4ca734"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Set", " ", "the", " ", "directory", " ", "to", " ", "the", " ", 
+    RowBox[{"notebook", "'"}], "s", " ", "directory"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"SetDirectory", "[", 
+     RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"segFol", "=", "\"\<Segment_Upper\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"voxTemplate", "=", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";"}], "  ", 
+   RowBox[{"(*", 
+    RowBox[{"Desired", " ", "template", " ", "resolution"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"muscleNumbers", "=", 
+     RowBox[{"Range", "[", "17", "]"}]}], ";"}], "  ", 
+   RowBox[{"(*", 
+    RowBox[{"Muscle", " ", "numbers", " ", "to", " ", "process"}], "*)"}], 
+   "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Use", " ", "Monitor", " ", "to", " ", "show", " ", "progress"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Monitor", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Do", "[", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Construct", " ", "the", " ", "file", " ", "name", " ", "for", " ", 
+        "the", " ", "current", " ", "muscle", " ", "data"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"muscleFileName", "=", 
+         RowBox[{"\"\<Muscle_\>\"", "<>", 
+          RowBox[{"IntegerString", "[", "muscleNumber", "]"}], "<>", 
+          "\"\<_All.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"FileExistsQ", "[", "muscleFileName", "]"}], ",", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Load", " ", "the", " ", "muscle", " ", "data", " ", "from", " ", 
+            RowBox[{"the", ".", "mx"}], " ", "file"}], "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"Get", "[", "muscleFileName", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Create", " ", "common", " ", "muscle", " ", "shape", " ", 
+             "based", " ", "on", " ", "distance", " ", "masks", " ", "of", 
+             " ", "all", " ", "subjects"}], "*)"}], 
+           RowBox[{"muscleReg", "=", 
+            RowBox[{"RegisterData", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"DistanceMask", "/@", "muscleAll"}], "]"}], ",", 
+                "voxTemplate"}], "}"}], ",", 
+              RowBox[{"MethodReg", "->", 
+               RowBox[{"{", 
+                RowBox[{"\"\<PCAaffine\>\"", ",", "\"\<PCAbspline\>\""}], 
+                "}"}]}], ",", 
+              RowBox[{"NumberSamples", "->", "1500"}], ",", 
+              RowBox[{"Resolutions", "->", "1"}], ",", 
+              RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+              RowBox[{"Iterations", "->", "250"}], ",", 
+              RowBox[{"DeleteTempDirectory", "->", "False"}], ",", 
+              RowBox[{"TempDirectory", "->", "\"\<TempReg\>\""}]}], "]"}]}], 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"muscleMean", "=", 
+            RowBox[{"Closing", "[", 
+             RowBox[{
+              RowBox[{"Ceiling", "[", 
+               RowBox[{
+                RowBox[{"Mean", "@", 
+                 RowBox[{"Transpose", "@", "muscleReg"}]}], "-", "0.2"}], 
+               "]"}], ",", "6"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Save", " ", "the", " ", "mean", " ", "and", " ", "registered", 
+             " ", "muscle", " ", "data"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"meanRegFileName", "=", 
+            RowBox[{"\"\<MuscleMeanReg_\>\"", "<>", 
+             RowBox[{"IntegerString", "[", "muscleNumber", "]"}], "<>", 
+             "\"\<.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"DumpSave", "[", 
+            RowBox[{"meanRegFileName", ",", 
+             RowBox[{"{", 
+              RowBox[{"muscleReg", ",", "muscleMean"}], "}"}]}], "]"}], ";"}],
+           "\[IndentingNewLine]", ",", 
+          RowBox[{
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<File not found: \>\"", ",", "muscleFileName"}], 
+            "]"}], ";"}]}], "]"}]}], ",", 
+       RowBox[{"{", 
+        RowBox[{"muscleNumber", ",", "muscleNumbers"}], "}"}]}], "]"}], " ", 
+     RowBox[{"(*", 
+      RowBox[{"End", " ", "of", " ", "Do", " ", "loop"}], "*)"}], ",", 
+     RowBox[{"\"\<Processing muscle \>\"", "<>", 
+      RowBox[{"ToString", "[", "muscleNumber", "]"}], "<>", "\"\< of \>\"", "<>", 
+      RowBox[{"ToString", "[", 
+       RowBox[{"Length", "[", "muscleNumbers", "]"}], "]"}]}]}], "]"}], 
+   "\n"}]}]], "Input",
+ CellChangeTimes->{{3.9182998701991024`*^9, 3.9182998702001*^9}, {
+   3.918299905703687*^9, 3.9182999406918335`*^9}, 3.918299991349108*^9, 
+   3.918348413316526*^9, {3.919840395359705*^9, 3.919840417800108*^9}, 
+   3.9211240418760796`*^9},ExpressionUUID->"504875fe-5cb0-444b-88f4-\
+f6c0b7ea43ae"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["2. Shape definition", "Subsection",
+ CellChangeTimes->{{3.915006946760977*^9, 3.915006955288187*^9}, {
+  3.91500700052862*^9, 3.915007002458715*^9}, {3.916225060442127*^9, 
+  3.9162250694826965`*^9}, {3.916300553161396*^9, 3.9163005536155643`*^9}, {
+  3.9163018644842167`*^9, 
+  3.916301865867905*^9}},ExpressionUUID->"d302b4eb-ff67-484d-ba70-\
+7810e044ba07"],
+
+Cell[CellGroupData[{
+
+Cell["a. Make  Common  mesh", "Subsubsection",
+ CellChangeTimes->{{3.91622507076337*^9, 3.916225075692341*^9}, {
+  3.916300555469351*^9, 
+  3.916300556415537*^9}},ExpressionUUID->"881935e1-61bd-4548-b948-\
+113ddf47e2d0"],
+
+Cell[BoxData[{
+ RowBox[{"Get", "[", "\"\<Muscle_4_All.mx\>\"", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Get", "[", "\"\<MuscleMeanReg_4.mx\>\"", "]"}]}], "Input",
+ CellChangeTimes->{{3.9185569887194214`*^9, 3.918557031918205*^9}, {
+  3.9185586125306377`*^9, 3.9185586234620323`*^9}, {3.9185586629202366`*^9, 
+  3.918558676110443*^9}, {3.918906531402263*^9, 3.918906534120027*^9}, {
+  3.918906721736597*^9, 3.918906724345354*^9}, {3.918906778731524*^9, 
+  3.918906782619057*^9}},
+ CellLabel->"In[21]:=",ExpressionUUID->"90044ba4-237d-854c-b162-e413a6bde530"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"high", "=", "2"}], ";"}], 
+  RowBox[{"(*", "mm", "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "lower", " ", "this", " ", "number", " ", "the", " ", "more", 
+    " ", "points", " ", "in", " ", "the", " ", "reference", " ", "mesh", " ", 
+    "so", " ", "more", " ", "detail"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"low", "=", "6"}], ";"}], 
+  RowBox[{"(*", "mm", "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "lower", " ", "this", " ", "number", " ", "the", " ", "more", 
+    " ", "points", " ", "on", " ", "the", " ", "deformable", " ", "mesh", " ",
+     "the", " ", "slower", " ", "the", " ", "methods", " ", "but", " ", 
+    "also", " ", "more", " ", "detail"}], "*)"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "low", " ", "and", " ", "high", " ", "resolution", " ", "average", " ", 
+    "musche", " ", "mesch", " ", "to", " ", "define", " ", "common", " ", 
+    "coordinates"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"dim", "=", 
+  RowBox[{"Dimensions", "@", "muscleMean"}]}], "\n", 
+ RowBox[{
+  RowBox[{"regionLow", "=", 
+   RowBox[{"MakeRegionMesh", "[", 
+    RowBox[{"muscleMean", ",", "voxTemplate", ",", "low"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"region", "=", 
+   RowBox[{"MakeRegionMesh", "[", 
+    RowBox[{"muscleMean", ",", "voxTemplate", ",", "high"}], "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.916299629473652*^9, 3.916299644978988*^9}, {
+   3.916300729924465*^9, 3.916300779886935*^9}, {3.916314427514374*^9, 
+   3.916314445803343*^9}, {3.9163146057654705`*^9, 3.916314609956064*^9}, {
+   3.9163745456832104`*^9, 3.916374546654318*^9}, {3.91638421555829*^9, 
+   3.916384231681368*^9}, {3.916385823478226*^9, 3.916385823938514*^9}, {
+   3.916386025330438*^9, 3.9163860521842823`*^9}, 3.916386214808428*^9, {
+   3.916386252598034*^9, 3.9163862526489906`*^9}, {3.916386301545357*^9, 
+   3.916386301577215*^9}, {3.916386362907711*^9, 3.916386365879511*^9}, {
+   3.916386410648227*^9, 3.916386420473901*^9}, {3.917947898697579*^9, 
+   3.917947911264269*^9}, {3.917947943250391*^9, 3.91794794344125*^9}, {
+   3.917948017501798*^9, 3.917948033354118*^9}, {3.917948081019438*^9, 
+   3.917948082043941*^9}, {3.91794856094557*^9, 3.9179485619812355`*^9}, {
+   3.9179488674316425`*^9, 3.917948867848285*^9}, {3.918540329795511*^9, 
+   3.918540333971823*^9}, {3.918540433030876*^9, 3.918540449300434*^9}, {
+   3.918540616451891*^9, 3.918540616905382*^9}, 3.918543141144266*^9},
+ CellLabel->"In[23]:=",ExpressionUUID->"59656820-1834-7444-9630-d9518474a65f"],
+
+Cell[BoxData[
+ RowBox[{"PlotData", "[", "muscleMean", "]"}]], "Input",
+ CellChangeTimes->{{3.9163144767587357`*^9, 3.916314513129274*^9}, 
+   3.91794791520512*^9},
+ CellLabel->
+  "In[163]:=",ExpressionUUID->"6a9772e9-9122-9f40-92d7-7810d23a87bb"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "project", " ", "points", " ", "from", " ", "low", " ", "on", " ", "high", 
+    " ", "quality", " ", "mesh"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"points", "=", 
+     RowBox[{
+      RowBox[{"RegionNearest", "[", "region", "]"}], "[", 
+      RowBox[{"MeshCoordinates", "@", "regionLow"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"cells", "=", 
+     RowBox[{"MeshCells", "[", 
+      RowBox[{"regionLow", ",", "2"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\n", 
+   RowBox[{"(*", 
+    RowBox[{"make", " ", "coordinates", " ", "for", " ", "transformation"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"coor", "=", 
+     RowBox[{"Transpose", "@", 
+      RowBox[{"MakeCoordinates", "[", 
+       RowBox[{
+        RowBox[{"Dimensions", "@", "muscleMean"}], ",", "voxTemplate"}], 
+       "]"}]}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.914815744282007*^9, 3.9148157972362747`*^9}, {
+   3.914816028686455*^9, 3.914816105616235*^9}, {3.91481707164353*^9, 
+   3.9148171158320866`*^9}, {3.914817282647436*^9, 3.914817285457184*^9}, {
+   3.9149112313988*^9, 3.914911231798533*^9}, {3.9149941317364426`*^9, 
+   3.9149941422336807`*^9}, 3.915012548913851*^9, 3.9162251248176723`*^9, {
+   3.916288350928341*^9, 3.916288360975618*^9}, {3.91628859637002*^9, 
+   3.916288607198753*^9}, {3.916288688029058*^9, 3.916288691313453*^9}, {
+   3.9162991597105103`*^9, 3.916299160076818*^9}, {3.916299230474583*^9, 
+   3.916299267787695*^9}, 3.91629962172051*^9, {3.916299754829181*^9, 
+   3.916299789038199*^9}, 3.916299871820579*^9, {3.916300906013506*^9, 
+   3.916300907871336*^9}, {3.9163142576842804`*^9, 3.9163142838617687`*^9}, 
+   3.918540337828745*^9},
+ CellLabel->"In[28]:=",ExpressionUUID->"3be0a59f-60da-1849-a762-79ced72a0080"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "change", " ", "low", " ", "and", " ", "high", " ", "to", " ", "see", " ", 
+    "effect"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"{", 
+   RowBox[{"region", ",", 
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{"points", ",", "cells"}], "]"}], ",", 
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{"points", ",", "cells", ",", "True"}], "]"}], ",", 
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{"points", ",", "cells", ",", "Blue"}], "]"}]}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.9163001463395023`*^9, 3.9163001557428074`*^9}, {
+   3.916300415985519*^9, 3.916300429324419*^9}, {3.916300694228737*^9, 
+   3.916300697866585*^9}, {3.916386229708229*^9, 3.916386238403099*^9}, 
+   3.917947968304514*^9, 3.9188906579001045`*^9},
+ CellLabel->
+  "In[167]:=",ExpressionUUID->"81c3724d-42ed-8a49-92cf-50015d769488"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["b. Register  mesh  to  local  space single example", "Subsubsection",
+ CellChangeTimes->{{3.9163007114390907`*^9, 3.9163007240759697`*^9}, {
+   3.916301555794401*^9, 3.9163015590198708`*^9}, 
+   3.91630179672336*^9},ExpressionUUID->"dc726fa1-12f5-cb48-ac9c-\
+4e9fda7e3626"],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+  "play", " ", "with", " ", "high", " ", "and", " ", "low", " ", "setting"}], 
+  " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.916386077088726*^9, 3.9163860871774807`*^9}},
+ CellLabel->"In[72]:=",ExpressionUUID->"fd1fc4aa-9d2b-6e47-ab00-4dd1f7329f9e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"demos", " ", "for", " ", "one", " ", "subject"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"i", "=", "6"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"musc", "=", 
+     RowBox[{"muscleAll", "[", 
+      RowBox[{"[", "i", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Make", " ", "a", " ", "high", " ", "quality", " ", "local", " ", 
+     "mesh"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"regionLocal", "=", 
+     RowBox[{"MakeRegionMesh", "[", 
+      RowBox[{"musc", ",", "voxTemplate", ",", "high"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "register", " ", "data", " ", "and", " ", "transform", " ", 
+     "coordinates"}], "*)"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Change", " ", "of", " ", "BsplineSpacing", " ", "does", " ", "not", " ", 
+     "make", " ", "a", " ", "difference"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"reg", ",", "coorM"}], "}"}], "=", 
+     RowBox[{"RegisterDataTransform", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"DistanceMask", "@", "musc"}], ",", "voxTemplate"}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"DistanceMask", "@", "muscleMean"}], ",", "voxTemplate"}], 
+        "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"coor", ",", "voxTemplate"}], "}"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"MethodReg", "->", 
+        RowBox[{"{", 
+         RowBox[{"\"\<affine\>\"", ",", "\"\<bspline\>\""}], "}"}]}], ",", 
+       RowBox[{"BsplineSpacing", "->", 
+        RowBox[{"{", 
+         RowBox[{"40", ",", "10", ",", "10"}], "}"}]}], ",", 
+       RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+       RowBox[{"PrintTempDirectory", "->", "False"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"get", " ", "displacement"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"delta", "=", 
+     RowBox[{"RotateDimensionsLeft", "[", 
+      RowBox[{"Transpose", "[", 
+       RowBox[{"coorM", "-", "coor"}], "]"}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "move", " ", "points", " ", "to", " ", "local", " ", "shape", " ", "and", 
+     " ", "project", " ", "on", " ", "mesh"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"pointsTmp", "=", 
+     RowBox[{"points", "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"delta", "[", 
+           RowBox[{"[", 
+            RowBox[{
+             RowBox[{"#", "[", 
+              RowBox[{"[", "3", "]"}], "]"}], ",", 
+             RowBox[{"#", "[", 
+              RowBox[{"[", "2", "]"}], "]"}], ",", 
+             RowBox[{"#", "[", 
+              RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "]"}], "&"}], "/@", 
+         RowBox[{"Round", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"#", "/", "voxTemplate"}], "&"}], "/@", "points"}], 
+          "]"}]}], ")"}], "[", 
+       RowBox[{"[", 
+        RowBox[{"All", ",", 
+         RowBox[{"{", 
+          RowBox[{"3", ",", "2", ",", "1"}], "}"}]}], "]"}], "]"}]}]}], ";"}],
+    "\[IndentingNewLine]", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"pointsLocal", "=", 
+      RowBox[{
+       RowBox[{"RegionNearest", "[", "regionLocal", "]"}], "[", "pointsTmp", 
+       "]"}]}], ";"}], ")"}]}]}]], "Input",
+ CellChangeTimes->{{3.9163010817372665`*^9, 3.916301094030764*^9}, {
+   3.9163014546460533`*^9, 3.9163014575466843`*^9}, 3.9163015045772514`*^9, {
+   3.916385810899429*^9, 3.916385814916757*^9}, {3.9179488602414093`*^9, 
+   3.9179488603704376`*^9}, {3.917949534318491*^9, 3.9179495352115993`*^9}, {
+   3.9179499614816303`*^9, 3.9179499623545475`*^9}, {3.9179505715117493`*^9, 
+   3.9179505716012497`*^9}, {3.9179507537900505`*^9, 3.917950755396487*^9}, {
+   3.917950992410673*^9, 3.917950992484045*^9}, {3.9179512655586185`*^9, 
+   3.917951266591535*^9}, {3.917952197354477*^9, 3.917952197757309*^9}, {
+   3.917952546067818*^9, 3.9179525461546535`*^9}, 3.918020177656105*^9, {
+   3.91803104263171*^9, 3.918031043156895*^9}, {3.918031118542841*^9, 
+   3.918031140470679*^9}, {3.918538224035939*^9, 3.918538224238596*^9}, {
+   3.9185396503628902`*^9, 3.91853967059251*^9}, {3.918539722672341*^9, 
+   3.918539767925932*^9}, {3.918539891351593*^9, 3.918539899328626*^9}, {
+   3.918540129809828*^9, 3.918540130254488*^9}, {3.918540165722519*^9, 
+   3.918540178765564*^9}},
+ CellLabel->
+  "In[168]:=",ExpressionUUID->"e0fbf094-ac34-ca46-84d3-0831656080c3"],
+
+Cell[BoxData[
+ RowBox[{"Dimensions", "@", "coorM"}]], "Input",
+ CellChangeTimes->{{3.918906451162901*^9, 3.9189064958046684`*^9}, {
+   3.918906649495865*^9, 3.918906653074871*^9}, 3.918906767536398*^9, {
+   3.9189068040082836`*^9, 3.9189068214332905`*^9}},
+ CellLabel->
+  "In[211]:=",ExpressionUUID->"5482ca1e-63f7-e448-8f8c-44b30e93ac46"],
+
+Cell[BoxData[
+ RowBox[{"PlotData", "[", 
+  RowBox[{
+   RowBox[{"DistanceMask", "@", "musc"}], ",", "reg"}], "]"}]], "Input",
+ CellChangeTimes->{{3.918540050871037*^9, 3.918540073124559*^9}},
+ CellLabel->
+  "In[175]:=",ExpressionUUID->"5867f2b3-02b7-724b-860e-33b98cfaa03d"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"regPl", "=", 
+   RowBox[{"MeshRegion", "[", 
+    RowBox[{"regionLocal", ",", 
+     RowBox[{"PlotTheme", "->", "\"\<LargeMesh\>\""}], ",", 
+     RowBox[{"MeshCellStyle", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"0", ",", "All"}], "}"}], "\[Rule]", "None"}], ",", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"1", ",", "All"}], "}"}], "\[Rule]", "None"}], ",", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"2", ",", "All"}], "}"}], "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"Opacity", "[", "1", "]"}], ",", "Red"}], "}"}]}]}], 
+       "}"}]}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{"Row", "@", 
+  RowBox[{"{", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Show", "[", 
+     RowBox[{"regPl", ",", 
+      RowBox[{"ListSpherePlot", "[", 
+       RowBox[{"points", ",", 
+        RowBox[{"SphereColor", "->", "Green"}]}], "]"}], ",", 
+      RowBox[{"ImageSize", "->", "200"}], ",", 
+      RowBox[{"PlotLabel", "->", "\"\<Local shape, template points\>\""}]}], 
+     "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Show", "[", 
+     RowBox[{"regPl", ",", 
+      RowBox[{"ListSpherePlot", "[", 
+       RowBox[{"pointsTmp", ",", 
+        RowBox[{"SphereColor", "->", "Green"}]}], "]"}], ",", 
+      RowBox[{"ImageSize", "->", "200"}], ",", 
+      RowBox[{
+      "PlotLabel", "->", 
+       "\"\<Local shape, local points after registration\>\""}]}], "]"}], ",",
+     "\[IndentingNewLine]", 
+    RowBox[{"Show", "[", 
+     RowBox[{"regPl", ",", 
+      RowBox[{"ListSpherePlot", "[", 
+       RowBox[{"pointsLocal", ",", 
+        RowBox[{"SphereColor", "->", "Green"}]}], "]"}], ",", 
+      RowBox[{"ImageSize", "->", "200"}], ",", 
+      RowBox[{
+      "PlotLabel", "->", 
+       "\"\<Local shape, local points after grid align\>\""}]}], "]"}]}], 
+   "}"}]}]}], "Input",
+ CellChangeTimes->{{3.9163012473644295`*^9, 3.916301439508096*^9}, {
+   3.9179486220873604`*^9, 3.917948626472688*^9}, 3.918538393221071*^9, {
+   3.9185398533676796`*^9, 3.9185398549409695`*^9}},
+ CellLabel->"In[53]:=",ExpressionUUID->"0777ff3e-eb4e-4845-9f1a-3e02c154f6d8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["b. Register  mesh  all muscles (most time consuming step)", \
+"Subsubsection",
+ CellChangeTimes->{{3.9163007114390907`*^9, 3.9163007240759697`*^9}, {
+  3.916301555794401*^9, 3.9163015590198708`*^9}, {3.91630178287562*^9, 
+  3.916301797852082*^9}, {3.916302920383592*^9, 
+  3.916302925654888*^9}},ExpressionUUID->"25826979-8621-ba45-80f1-\
+a19bed3d922a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "register", " ", "template", " ", "to", " ", "all", " ", "muscles", " ", 
+    "and", " ", "transform", " ", "the", " ", "points", " ", "to", " ", 
+    "local", " ", "space"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Get", "[", "\"\<Muscle_2_All.mx\>\"", "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Get", "[", "\"\<MuscleMeanReg_2.mx\>\"", "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"i", "=", "0"}], ";", 
+    RowBox[{"Dynamic", "[", "i", "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"pointsAll", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"i", "++"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"regionLocal", "=", 
+          RowBox[{"MakeRegionMesh", "[", 
+           RowBox[{"#", ",", "voxTemplate", ",", "high"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"reg", ",", "coorM"}], "}"}], "=", 
+          RowBox[{"RegisterDataTransform", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"DistanceMask", "@", "#"}], ",", "voxTemplate"}], "}"}],
+             ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"DistanceMask", "@", "muscleMean"}], ",", 
+              "voxTemplate"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"coor", ",", "voxTemplate"}], "}"}], ",", 
+            RowBox[{"MethodReg", "->", 
+             RowBox[{"{", 
+              RowBox[{"\"\<affine\>\"", ",", "\"\<bspline\>\""}], "}"}]}], 
+            ",", 
+            RowBox[{"BsplineSpacing", "->", "20"}], ",", 
+            RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+            RowBox[{"PrintTempDirectory", "->", "False"}]}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"delta", "=", 
+          RowBox[{"RotateDimensionsLeft", "[", 
+           RowBox[{"Transpose", "[", 
+            RowBox[{"coorM", "-", "coor"}], "]"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"RegionNearest", "[", "regionLocal", "]"}], "[", 
+          RowBox[{"points", "-", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"delta", "[", 
+                RowBox[{"[", 
+                 RowBox[{
+                  RowBox[{"#", "[", 
+                   RowBox[{"[", "3", "]"}], "]"}], ",", 
+                  RowBox[{"#", "[", 
+                   RowBox[{"[", "2", "]"}], "]"}], ",", 
+                  RowBox[{"#", "[", 
+                   RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "]"}], "&"}], "/@", 
+              RowBox[{"Round", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"#", "/", "voxTemplate"}], "&"}], "/@", "points"}], 
+               "]"}]}], ")"}], "[", 
+            RowBox[{"[", 
+             RowBox[{"All", ",", 
+              RowBox[{"{", 
+               RowBox[{"3", ",", "2", ",", "1"}], "}"}]}], "]"}], "]"}]}], 
+          "]"}]}], ")"}], "&"}], "/@", "muscleAll"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"DumpSave", "[", 
+     RowBox[{"\"\<points_2_All.mx\>\"", ",", 
+      RowBox[{"{", 
+       RowBox[{"pointsAll", ",", "cells"}], "}"}]}], "]"}], 
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.915083763185119*^9, 3.915083841647412*^9}, {
+   3.915083893328306*^9, 3.915083923168322*^9}, {3.915083961776917*^9, 
+   3.915083962240869*^9}, {3.9150840556172085`*^9, 3.915084072251264*^9}, {
+   3.915084646692934*^9, 3.915084658772528*^9}, {3.915084826784413*^9, 
+   3.915084873368105*^9}, {3.915084934616417*^9, 3.9150849623340054`*^9}, {
+   3.915085009733656*^9, 3.915085047143598*^9}, {3.9150852763326225`*^9, 
+   3.915085283644287*^9}, {3.9162251057024937`*^9, 3.916225108983614*^9}, {
+   3.916225202132473*^9, 3.916225218292848*^9}, {3.916281349666275*^9, 
+   3.916281394923713*^9}, {3.916289009089905*^9, 3.916289035401468*^9}, {
+   3.916292472352541*^9, 3.9162924727560863`*^9}, {3.916292537213005*^9, 
+   3.916292537617231*^9}, {3.9162928760217724`*^9, 3.916292877717594*^9}, {
+   3.9163007889587383`*^9, 3.916300818674709*^9}, {3.916301462241963*^9, 
+   3.916301537444357*^9}, 3.916301587581644*^9, {3.9163016418927994`*^9, 
+   3.916301649617626*^9}, {3.916301745608488*^9, 3.916301768180416*^9}, 
+   3.916302457652893*^9, {3.91631468416078*^9, 3.916314689121195*^9}, {
+   3.91889022071076*^9, 3.918890226868263*^9}, {3.9188988990133133`*^9, 
+   3.918898910949367*^9}, {3.918903234871765*^9, 3.918903266719412*^9}, {
+   3.918905475732259*^9, 3.918905487926084*^9}, {3.9189060590086727`*^9, 
+   3.918906088630833*^9}, {3.918906145153599*^9, 3.918906147900553*^9}, 
+   3.919840492974016*^9, 
+   3.921124061183899*^9},ExpressionUUID->"f4ed32b8-8f1b-644f-9579-\
+713049ff1175"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+b.2. Register   mesh   all  muscles  (most  time  consuming  step)\
+\>", "Subsubsection",
+ CellChangeTimes->{
+  3.918907170928133*^9, {3.9189072095414257`*^9, 3.918907216867668*^9}, 
+   3.919011811718315*^9, 
+   3.921063445052618*^9},ExpressionUUID->"799910fe-48f3-654e-b929-\
+a8d7fc8e4077"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"voxTemplate", "=", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"high", "=", "2"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"low", "=", "8"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Do", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"muscleFileName", "=", 
+      RowBox[{"\"\<Muscle_\>\"", "<>", 
+       RowBox[{"IntegerString", "[", "i", "]"}], "<>", "\"\<_All.mx\>\""}]}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"meanFileName", "=", 
+      RowBox[{"\"\<MuscleMeanReg_\>\"", "<>", 
+       RowBox[{"IntegerString", "[", "i", "]"}], "<>", "\"\<.mx\>\""}]}], ";",
+      "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"FileExistsQ", "[", "muscleFileName", "]"}], "&&", 
+        RowBox[{"FileExistsQ", "[", "meanFileName", "]"}]}], ",", 
+       RowBox[{
+        RowBox[{"Get", "[", "muscleFileName", "]"}], ";", 
+        RowBox[{"Get", "[", "meanFileName", "]"}], ";", "\[IndentingNewLine]",
+         "\[IndentingNewLine]", 
+        RowBox[{"regionLow", "=", 
+         RowBox[{"MakeRegionMesh", "[", 
+          RowBox[{"muscleMean", ",", "voxTemplate", ",", "low"}], "]"}]}], 
+        ";", "\[IndentingNewLine]", 
+        RowBox[{"region", "=", 
+         RowBox[{"MakeRegionMesh", "[", 
+          RowBox[{"muscleMean", ",", "voxTemplate", ",", "high"}], "]"}]}], 
+        ";", "\[IndentingNewLine]", 
+        RowBox[{"points", "=", 
+         RowBox[{
+          RowBox[{"RegionNearest", "[", "region", "]"}], "[", 
+          RowBox[{"MeshCoordinates", "@", "regionLow"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"cells", "=", 
+         RowBox[{"MeshCells", "[", 
+          RowBox[{"regionLow", ",", "2"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"coor", "=", 
+         RowBox[{"Transpose", "@", 
+          RowBox[{"MakeCoordinates", "[", 
+           RowBox[{
+            RowBox[{"Dimensions", "@", "muscleMean"}], ",", "voxTemplate"}], 
+           "]"}]}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"pointsAll", "=", 
+         RowBox[{"MapIndexed", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"Print", "[", 
+               RowBox[{"\"\<Processing group \>\"", ",", 
+                RowBox[{"#2", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}], ",", "\"\< of Muscle \>\"", 
+                ",", "i"}], "]"}], ";", "\[IndentingNewLine]", 
+              RowBox[{"regionLocal", "=", 
+               RowBox[{"MakeRegionMesh", "[", 
+                RowBox[{"#1", ",", "voxTemplate", ",", "high"}], "]"}]}], ";",
+               "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"reg", ",", "coorM"}], "}"}], "=", 
+               RowBox[{"RegisterDataTransform", "[", 
+                RowBox[{
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"DistanceMask", "[", "#1", "]"}], ",", 
+                   "voxTemplate"}], "}"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"DistanceMask", "[", "muscleMean", "]"}], ",", 
+                   "voxTemplate"}], "}"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"coor", ",", "voxTemplate"}], "}"}], ",", 
+                 RowBox[{"MethodReg", "->", 
+                  RowBox[{"{", 
+                   RowBox[{"\"\<affine\>\"", ",", "\"\<bspline\>\""}], 
+                   "}"}]}], ",", 
+                 RowBox[{"BsplineSpacing", "->", "20"}], ",", 
+                 RowBox[{"InterpolationOrderReg", "->", "1"}], ",", 
+                 RowBox[{"PrintTempDirectory", "->", "False"}]}], "]"}]}], 
+              ";", "\[IndentingNewLine]", 
+              RowBox[{"delta", "=", 
+               RowBox[{"RotateDimensionsLeft", "[", 
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"coorM", "-", "coor"}], "]"}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"RegionNearest", "[", "regionLocal", "]"}], "[", 
+               RowBox[{"points", "-", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"delta", "[", 
+                    RowBox[{"[", 
+                    RowBox[{
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "3", "]"}], "]"}], ",", 
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}], ",", 
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "]"}], "&"}], "/@", 
+                   RowBox[{"Round", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"#", "/", "voxTemplate"}], "&"}], "/@", 
+                    "points"}], "]"}]}], ")"}], "[", 
+                 RowBox[{"[", 
+                  RowBox[{"All", ",", 
+                   RowBox[{"{", 
+                    RowBox[{"3", ",", "2", ",", "1"}], "}"}]}], "]"}], 
+                 "]"}]}], "]"}]}], ")"}], "&"}], ",", "muscleAll"}], "]"}]}], 
+        ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"saveFileName", "=", 
+         RowBox[{"\"\<points_\>\"", "<>", 
+          RowBox[{"IntegerString", "[", "i", "]"}], "<>", 
+          "\"\<_All.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", 
+         RowBox[{"\"\<Saving file: \>\"", ",", 
+          RowBox[{"FileNameJoin", "[", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"Directory", "[", "]"}], ",", "saveFileName"}], "}"}], 
+           "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"DumpSave", "[", 
+         RowBox[{"saveFileName", ",", 
+          RowBox[{"{", 
+           RowBox[{"pointsAll", ",", "cells"}], "}"}]}], "]"}], ";"}], 
+       "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"Print", "[", 
+         RowBox[{
+         "\"\<File not found for muscle number \>\"", ",", "i", ",", 
+          "\"\<: \>\"", ",", "muscleFileName", ",", "\"\< or \>\"", ",", 
+          "meanFileName"}], "]"}], ";"}]}], "]"}]}], ",", 
+    RowBox[{"{", 
+     RowBox[{"i", ",", "1", ",", "17"}], "}"}]}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.918901347303833*^9, 3.918901347303833*^9}, {
+   3.918901413763002*^9, 3.918901418219113*^9}, {3.918901591246748*^9, 
+   3.9189016187346935`*^9}, 3.918901813391575*^9, {3.918902031210953*^9, 
+   3.91890203396677*^9}, {3.918902108467676*^9, 3.9189021270919304`*^9}, 
+   3.9189023364805183`*^9, {3.9189025000801563`*^9, 3.918902535166918*^9}, {
+   3.918902565694523*^9, 3.9189025982102013`*^9}, {3.918902894391424*^9, 
+   3.91890289497085*^9}, {3.918902943759666*^9, 3.9189029452159214`*^9}, {
+   3.91890386486824*^9, 3.91890387441638*^9}, {3.918904043097233*^9, 
+   3.918904134441524*^9}, {3.9189047731129646`*^9, 3.918904822697792*^9}, {
+   3.9189049963572273`*^9, 3.91890501705657*^9}, {3.918906872364968*^9, 
+   3.918906947609249*^9}, {3.918906983685436*^9, 3.918906993198723*^9}, {
+   3.9189070625517616`*^9, 3.918907093534261*^9}, {3.918907245262656*^9, 
+   3.9189072498607044`*^9}, {3.919000408403511*^9, 3.919000418153824*^9}, 
+   3.919138953375618*^9, 3.919139001792218*^9, {3.919840107664095*^9, 
+   3.919840114692093*^9}, 
+   3.921124066809902*^9},ExpressionUUID->"b5951b21-8a28-384f-861d-\
+84547432da96"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["3. Shape analysis", "Subsection",
+ CellChangeTimes->{{3.915006946760977*^9, 3.915006955288187*^9}, {
+  3.91500700052862*^9, 3.915007002458715*^9}, {3.916225060442127*^9, 
+  3.9162250694826965`*^9}, {3.916300553161396*^9, 3.9163005536155643`*^9}, {
+  3.9163018644842167`*^9, 3.9163018763008633`*^9}, {3.9198407057269726`*^9, 
+  3.9198407059476185`*^9}},ExpressionUUID->"0d0784a2-c693-d040-95be-\
+54c682c212bb"],
+
+Cell[CellGroupData[{
+
+Cell["a. Perform shape analysis", "Subsubsection",
+ CellChangeTimes->{{3.91622507076337*^9, 3.916225075692341*^9}, {
+   3.9162252328728123`*^9, 3.9162252381628304`*^9}, {3.916302007173134*^9, 
+   3.916302007364698*^9}, 
+   3.916302937225927*^9},ExpressionUUID->"ec5b8dc6-5d66-9b46-abd5-\
+8374383d166a"],
+
+Cell[BoxData[
+ RowBox[{"Position", "[", 
+  RowBox[{
+   RowBox[{"UnitStep", "[", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"Accumulate", "[", "val", "]"}], "/", 
+       RowBox[{"Total", "[", "val", "]"}]}], ")"}], "-", "0.95"}], "]"}], ",",
+    "0"}], "]"}]], "Input",
+ CellChangeTimes->{{3.921057032058119*^9, 3.921057068908577*^9}, {
+  3.92105710230777*^9, 3.921057106950121*^9}, {3.9210571372401447`*^9, 
+  3.9210571598450184`*^9}, {3.9210571924416275`*^9, 3.921057273718029*^9}},
+ CellLabel->"In[59]:=",ExpressionUUID->"14f68ddf-eead-1e41-bc4d-ca7dc3521aa4"],
+
+Cell[BoxData[{
+ RowBox[{"<<", "pointsAll.mx"}], "\[IndentingNewLine]", 
+ RowBox[{"<<", "muscleAll.mx"}]}], "Input",
+ CellChangeTimes->{{3.915187291199427*^9, 3.915187294140915*^9}, 
+   3.916302012247051*^9, {3.916306374962707*^9, 3.9163063917483673`*^9}},
+ CellLabel->"In[13]:=",ExpressionUUID->"516d3041-ee0b-2846-af6a-8fca24f6891e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "calculate", " ", "the", " ", "mean", " ", "muscle", " ", "shape"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"meanPoints", "=", 
+     RowBox[{"Mean", "[", "pointsAll", "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "subtract", " ", "the", " ", "mean", " ", "coordinates", " ", "to", " ", 
+     "get", " ", "the", " ", "variation", " ", "per", " ", "point", " ", 
+     "and", " ", "vectorize"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"variation", "=", 
+     RowBox[{"Transpose", "@", 
+      RowBox[{"Flatten", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "-", "meanPoints"}], "&"}], "/@", "pointsAll"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "3"}], "}"}]}], "]"}]}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"get", " ", "shap", " ", "eigensystem"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"val", ",", "vec"}], "}"}], "=", 
+     RowBox[{"Eigensystem", "[", 
+      RowBox[{"Covariance", "[", "variation", "]"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "find", " ", "the", " ", "maximum", " ", "number", " ", "of", " ", 
+     "relevant", " ", "vectors"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"nvec", "=", 
+     RowBox[{"First", "@", 
+      RowBox[{"Last", "@", 
+       RowBox[{"Position", "[", 
+        RowBox[{
+         RowBox[{"UnitStep", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"Accumulate", "[", "val", "]"}], "/", 
+             RowBox[{"Total", "[", "val", "]"}]}], ")"}], "-", "0.999"}], 
+          "]"}], ",", "0"}], "]"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"vecMat", "=", 
+     RowBox[{"vec", "[", 
+      RowBox[{"[", 
+       RowBox[{";;", "nvec"}], "]"}], "]"}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.916302059611662*^9, 3.9163020777155533`*^9}, {
+   3.9163023500379276`*^9, 3.9163023668725224`*^9}, {3.916302522643341*^9, 
+   3.916302585159252*^9}, {3.916302615735069*^9, 3.916302632012894*^9}, {
+   3.9163034450150185`*^9, 3.91630350616612*^9}, 3.91630360831522*^9, {
+   3.9163037911460743`*^9, 3.9163037913704185`*^9}, {3.916305796431223*^9, 
+   3.916305810446178*^9}, 3.9163062724425697`*^9, {3.916306345089123*^9, 
+   3.9163063488102493`*^9}, 3.916378387789692*^9},
+ CellLabel->"In[15]:=",ExpressionUUID->"dc58482a-494c-b94f-ae77-3f255d7f3a72"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.921054399125904*^9, 
+  3.9210544121173553`*^9}},ExpressionUUID->"45eee126-fe47-204d-b5df-\
+6de2581a6dbc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["b. Evaluate shape analysis", "Subsubsection",
+ CellChangeTimes->{{3.91622507076337*^9, 3.916225075692341*^9}, {
+   3.9162252328728123`*^9, 3.9162252381628304`*^9}, {3.916302007173134*^9, 
+   3.916302007364698*^9}, 3.916302937225927*^9, {3.916306356963043*^9, 
+   3.916306361604505*^9}},ExpressionUUID->"bbd298a2-67bb-3d47-b10c-\
+2ed61fb610e4"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"numbVecs", "=", "2"}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "perform", " ", "all", " ", "the", " ", "fits", " ", "and", " ", 
+    "generate", " ", "all", " ", "the", " ", "meshes"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fittedVectors", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"FitVariationVec", "[", 
+      RowBox[{"#", ",", "vecMat", ",", " ", "numbVecs"}], "]"}], "&"}], "/@", 
+    "variation"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"fittedPoints", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"FitVariationPoints", "[", 
+      RowBox[{"#", ",", "meanPoints", ",", "vecMat", ",", " ", "numbVecs"}], 
+      "]"}], "&"}], "/@", "variation"}]}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.91636695572521*^9, 3.919136020359951*^9, 3.919143262091776*^9, {
+   3.9192342463033924`*^9, 3.919234246414484*^9}},
+ CellLabel->"In[41]:=",ExpressionUUID->"9fb74780-35ed-a245-81b2-b32d44908e2e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"show", " ", "all", " ", "the", " ", "meshes"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"Manipulate", "[", 
+   RowBox[{
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{
+      RowBox[{"FitVariationPoints", "[", 
+       RowBox[{
+        RowBox[{"variation", "[", 
+         RowBox[{"[", "i", "]"}], "]"}], ",", "meanPoints", ",", "vecMat", 
+        ",", "n"}], "]"}], ",", "cells"}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "\"\<Dataset Nr\>\""}], "}"}], ",", "1", 
+      ",", 
+      RowBox[{"Length", "@", "fittedPoints"}], ",", "1"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"n", ",", "10", ",", "\"\<Number of components\>\""}], "}"}], 
+      ",", "1", ",", 
+      RowBox[{"Length", "@", "vecMat"}], ",", "1"}], "}"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.916303389119226*^9, 3.916303407815677*^9}, {
+   3.916303513785265*^9, 3.916303588655409*^9}, 3.916303754112475*^9, {
+   3.916303805595674*^9, 3.916303807616106*^9}, {3.916304076592356*^9, 
+   3.91630410505958*^9}, {3.9163042268416996`*^9, 3.916304240663399*^9}, {
+   3.916304305277031*^9, 3.916304345298537*^9}, {3.916305814502697*^9, 
+   3.916305821930698*^9}, {3.91803792619346*^9, 3.9180379282692337`*^9}},
+ CellLabel->
+  "In[146]:=",ExpressionUUID->"52e861a4-f7c9-8d4d-8e36-a1acb0523173"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Make", " ", "a", " ", "morph", " ", "list", " ", "of", " ", "random", " ",
+     "meshes"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"list", "=", 
+     RowBox[{"RandomChoice", "[", 
+      RowBox[{
+       RowBox[{"Range", "[", 
+        RowBox[{"Length", "@", "fittedPoints"}], "]"}], ",", "10"}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"steps", "=", "10"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "create", " ", "morph", " ", "between", " ", "random", " ", "meshes", " ",
+      "by", " ", "going", " ", "from", " ", "one", " ", "vector", " ", "to", 
+     " ", "the", " ", "other"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"randi", "=", 
+    RowBox[{"Append", "[", 
+     RowBox[{
+      RowBox[{"Partition", "[", 
+       RowBox[{"list", ",", "2", ",", "1"}], "]"}], ",", 
+      RowBox[{"list", "[", 
+       RowBox[{"[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "1"}], ",", "1"}], "}"}], "]"}], "]"}]}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"morph", "=", 
+     RowBox[{"DeleteDuplicates", "[", 
+      RowBox[{"Flatten", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"f1", ",", "f2"}], "}"}], "=", 
+             RowBox[{"fittedVectors", "[", 
+              RowBox[{"[", "#", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"Transpose", "[", 
+             RowBox[{"Table", "[", 
+              RowBox[{
+               RowBox[{"Range", "[", 
+                RowBox[{
+                 RowBox[{"f1", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], ",", 
+                 RowBox[{"f2", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], ",", 
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"f2", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "-", 
+                    RowBox[{"f1", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}]}], ")"}], "/", "steps"}]}],
+                 "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"i", ",", "1", ",", 
+                 RowBox[{"Length", "@", "f1"}]}], "}"}]}], "]"}], "]"}]}], 
+           "\[IndentingNewLine]", ")"}], "&"}], "/@", "randi"}], ",", "1"}], 
+       "]"}], "]"}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{
+  3.916306354437563*^9, 3.9163063976876087`*^9, {3.916306451849478*^9, 
+   3.916306485153126*^9}, {3.916366953652748*^9, 3.9163669670224857`*^9}, 
+   3.916385724430141*^9},
+ CellLabel->
+  "In[287]:=",ExpressionUUID->"7b5bc30d-30e2-2549-868d-3ef32f74d12e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"show", " ", "morphing"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"Manipulate", "[", 
+   RowBox[{
+    RowBox[{"PlotMesh", "[", 
+     RowBox[{
+      RowBox[{"meanPoints", "+", 
+       RowBox[{"Partition", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"morph", "[", 
+           RowBox[{"[", "n1", "]"}], "]"}], ".", 
+          RowBox[{"vecMat", "[", 
+           RowBox[{"[", 
+            RowBox[{";;", "numbVecs"}], "]"}], "]"}]}], ",", "3"}], "]"}]}], 
+      ",", "cells"}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"n1", ",", "1", ",", "\"\<Morph Meshes\>\""}], "}"}], ",", "1",
+       ",", 
+      RowBox[{"Length", "@", "morph"}], ",", "1"}], "}"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.916305379047062*^9, 3.9163053822241173`*^9}, {
+   3.916305600594167*^9, 3.916305695140848*^9}, {3.916305825341631*^9, 
+   3.916305829221121*^9}, {3.9163065040759735`*^9, 3.9163065081944046`*^9}, 
+   3.916385543270817*^9},
+ CellLabel->
+  "In[291]:=",ExpressionUUID->"a4f21efe-bedd-0549-aec4-253f1d2f17ce"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "compare", " ", "to", " ", "surfaces", " ", "contours", " ", "of", " ", 
+    "orriginal", " ", "segmentations"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"conts", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"PlotContour", "[", 
+        RowBox[{"#", ",", "voxTemplate"}], "]"}], "&"}], "/@", 
+      "muscleAll"}]}], ";"}], 
+   RowBox[{"(*", 
+    RowBox[{"contours", " ", "take", " ", "a", " ", "while"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"meshes", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"PlotMesh", "[", 
+        RowBox[{"#", ",", "cells"}], "]"}], "&"}], "/@", "fittedPoints"}]}], 
+    ";"}], "\n", 
+   RowBox[{"Manipulate", "[", 
+    RowBox[{
+     RowBox[{"Show", "[", 
+      RowBox[{
+       RowBox[{"conts", "[", 
+        RowBox[{"[", "i", "]"}], "]"}], ",", 
+       RowBox[{"meshes", "[", 
+        RowBox[{"[", "i", "]"}], "]"}], ",", 
+       RowBox[{"ImageSize", "->", "800"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", 
+       RowBox[{"Length", "@", "muscleAll"}], ",", "1"}], "}"}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.916306142276861*^9, 3.916306182292444*^9}, {
+  3.916306276192768*^9, 3.916306277406298*^9}, {3.916306528633127*^9, 
+  3.916306542022969*^9}, {3.916385669687202*^9, 3.916385684317045*^9}},
+ CellLabel->"In[45]:=",ExpressionUUID->"190fba1b-e3ee-4344-9d76-5d1d0b1986fb"],
+
+Cell[BoxData[
+ RowBox[{"FeatureSpacePlot3D", "[", "fittedVectors", "]"}]], "Input",
+ CellChangeTimes->{{3.916303927796745*^9, 3.916303933254902*^9}, {
+  3.916304056366217*^9, 3.91630405662327*^9}},
+ CellLabel->
+  "In[158]:=",ExpressionUUID->"f8edaf11-0ee0-5842-98e1-f0f12b6003c8"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["4. Analysis & Calculations", "Subsection",
+ CellChangeTimes->{{3.9198407216891937`*^9, 3.919840736332693*^9}, {
+  3.921626784248617*^9, 
+  3.9216267881104794`*^9}},ExpressionUUID->"08292758-ccd1-2b45-80d4-\
+ad6d4b4f19ff"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Gather all number of vectors and number of cells for each muscle\
+\>", "Subsubsection",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.920105048059919*^9, 3.920105051209112*^9}, 
+   3.9201051193426857`*^9, {3.921124342917713*^9, 
+   3.9211243724170446`*^9}},ExpressionUUID->"a1959d98-a117-104f-bcf4-\
+150fed27038a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Initialize", " ", "empty", " ", "lists", " ", "to", " ", "store", " ", 
+    "the", " ", "number", " ", "of", " ", "principal", " ", "components", " ",
+     "and", " ", "the", " ", "amount", " ", "of", " ", "cells", " ", "for", 
+    " ", "each", " ", "muscle", " ", "dataset"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"allnvec", "=", 
+     RowBox[{"{", "}"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"allcells", "=", 
+     RowBox[{"{", "}"}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Loop", " ", "through", " ", "the", " ", "muscle", " ", "datasets", " ", 
+      "from", " ", "1", " ", "to", " ", "17"}], ",", 
+     RowBox[{"skipping", " ", "datasets", " ", "6", " ", "and", " ", "11"}]}],
+     "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Do", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"i", "==", "6"}], "||", 
+          RowBox[{"i", "==", "11"}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"AppendTo", "[", 
+           RowBox[{"allnvec", ",", "Null"}], "]"}], ";", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Skip", " ", "the", " ", "computation", " ", "for", " ", 
+            "datasets", " ", "6", " ", "and", " ", "11", " ", "by", " ", 
+            "appending", " ", "Null"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"Continue", "[", "]"}]}]}], "\[IndentingNewLine]", "]"}], 
+       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"Load", " ", "muscle", " ", "data"}], ",", 
+         RowBox[{"mean", " ", "regression", " ", "data"}], ",", 
+         RowBox[{
+         "and", " ", "points", " ", "data", " ", "from", " ", "files", " ", 
+          "named", " ", "according", " ", "to", " ", "the", " ", "muscle", 
+          " ", "number"}]}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"Musclenumber", "=", "i"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Get", "[", 
+        RowBox[{"\"\<Muscle_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "Musclenumber", "]"}], "<>", 
+         "\"\<_All.mx\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Get", "[", 
+        RowBox[{"\"\<MuscleMeanReg_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "Musclenumber", "]"}], "<>", 
+         "\"\<.mx\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Get", "[", 
+        RowBox[{"\"\<points_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "Musclenumber", "]"}], "<>", 
+         "\"\<_All.mx\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{
+         "Define", " ", "high", " ", "and", " ", "low", " ", "thresholds", 
+          " ", "for", " ", "processing"}], ",", 
+         RowBox[{
+         "and", " ", "a", " ", "voxel", " ", "template", " ", "for", " ", 
+          "mesh", " ", "creation"}]}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"high", "=", "2"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"low", "=", "8"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"voxTemplate", "=", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{
+         "Create", " ", "a", " ", "mesh", " ", "region", " ", "based", " ", 
+          "on", " ", "the", " ", "mean", " ", "muscle", " ", "data"}], ",", 
+         RowBox[{
+         "using", " ", "the", " ", "specified", " ", "voxel", " ", "template",
+           " ", "and", " ", "low", " ", "threshold"}]}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"regionLow", "=", 
+        RowBox[{"MakeRegionMesh", "[", 
+         RowBox[{"muscleMean", ",", "voxTemplate", ",", "low"}], "]"}]}], ";",
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Extract", " ", "cells", " ", "from", " ", "the", " ", "mesh", " ", 
+         "region", " ", "and", " ", "calculate", " ", "the", " ", "total", 
+         " ", "number", " ", "of", " ", "these", " ", "cells"}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"cells", "=", 
+        RowBox[{"MeshCells", "[", 
+         RowBox[{"regionLow", ",", "2"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"dimcells", "=", 
+        RowBox[{"Dimensions", "@", "cells"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"amountofcells", "=", 
+        RowBox[{"First", "@", "dimcells"}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Append", " ", "the", " ", "number", " ", "of", " ", "cells", " ", 
+         "for", " ", "the", " ", "current", " ", "muscle", " ", "dataset", 
+         " ", "to", " ", "the", " ", "allcells", " ", "list"}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"AppendTo", "[", 
+        RowBox[{"allcells", ",", "amountofcells"}], "]"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Calculate", " ", "the", " ", "mean", " ", "of", " ", "all", " ", 
+         "points", " ", "and", " ", "then", " ", "the", " ", "variation", " ",
+          "of", " ", "each", " ", "point", " ", "from", " ", "this", " ", 
+         "mean"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"meanPoints", "=", 
+        RowBox[{"Mean", "[", "pointsAll", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"variation", "=", 
+        RowBox[{"Transpose", "[", 
+         RowBox[{"Flatten", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"#", "-", "meanPoints"}], "&"}], "/@", "pointsAll"}], 
+           ",", 
+           RowBox[{"{", 
+            RowBox[{"2", ",", "3"}], "}"}]}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Perform", " ", "eigensystem", " ", "analysis", " ", "on", " ", "the",
+          " ", "covariance", " ", "matrix", " ", "of", " ", "variations", " ",
+          "to", " ", "obtain", " ", "eigenvalues", " ", "and", " ", 
+         "eigenvectors"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"val", ",", "vec"}], "}"}], "=", 
+        RowBox[{"Eigensystem", "[", 
+         RowBox[{"Covariance", "[", "variation", "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Determine", " ", "the", " ", "number", " ", "of", " ", "principal", 
+         " ", "components", " ", "required", " ", "to", " ", "explain", " ", 
+         "at", " ", "least", " ", "95", "%", " ", "of", " ", "the", " ", 
+         "variance"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"nvec", "=", 
+        RowBox[{"First", "@", 
+         RowBox[{"Last", "@", 
+          RowBox[{"Position", "[", 
+           RowBox[{
+            RowBox[{"UnitStep", "[", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"Accumulate", "[", "val", "]"}], "/", 
+                RowBox[{"Total", "[", "val", "]"}]}], ")"}], "-", "0.95"}], 
+             "]"}], ",", "0"}], "]"}]}]}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Append", " ", "the", " ", "number", " ", "of", " ", "necessary", " ",
+          "principal", " ", "components", " ", "to", " ", "the", " ", 
+         "allnvec", " ", "list"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"AppendTo", "[", 
+        RowBox[{"allnvec", ",", "nvec"}], "]"}], ";"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "17"}], "}"}]}], "]"}], ";"}], 
+   "\n"}]}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.920103673098345*^9, 3.9201036762138233`*^9}, {
+   3.92010372810144*^9, 3.920103937615801*^9}, 3.920104077947916*^9, {
+   3.920104151531525*^9, 3.92010415203064*^9}, {3.920104193603618*^9, 
+   3.9201042219635296`*^9}, {3.920104368360171*^9, 3.9201043843734417`*^9}, {
+   3.920104674052183*^9, 3.920104699629627*^9}, 3.9201051193426857`*^9, {
+   3.921037936387949*^9, 3.92103793756548*^9}, {3.921048284250913*^9, 
+   3.9210482846026535`*^9}, 3.921048512008852*^9, {3.9210486575136127`*^9, 
+   3.921048759298403*^9}, {3.9210489252572527`*^9, 3.921048949525038*^9}, {
+   3.921049027476494*^9, 3.9210490757256565`*^9}, {3.9210495610206184`*^9, 
+   3.9210495859250584`*^9}, {3.921049771455742*^9, 3.921049771780113*^9}, {
+   3.9211293240262394`*^9, 3.921129418143291*^9}, {3.921155516182598*^9, 
+   3.921155516751417*^9}},
+ CellLabel->"In[23]:=",ExpressionUUID->"fd162a76-ffef-4f46-9629-7f742cd4c1cd"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Show valid Results", "Subsubsection",
+ CellChangeTimes->{{3.921125311627011*^9, 3.921125323040104*^9}, {
+  3.921125384529735*^9, 
+  3.921125400092882*^9}},ExpressionUUID->"4e6df1b9-64a6-6142-8bc8-\
+8ad13275edcf"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"validData", "=", 
+   RowBox[{"DeleteCases", "[", 
+    RowBox[{
+     RowBox[{"Transpose", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Range", "[", "17", "]"}], ",", "allnvec"}], "}"}], "]"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{"_", ",", "Null"}], "}"}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"validcells", "=", " ", 
+   RowBox[{"DeleteCases", "[", 
+    RowBox[{
+     RowBox[{"Transpose", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"DeleteCases", "[", 
+         RowBox[{
+          RowBox[{"Range", "[", 
+           RowBox[{"1", ",", "17"}], "]"}], ",", 
+          RowBox[{"6", "|", "11"}]}], "]"}], ",", "allcells"}], "}"}], "]"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{"_", ",", "Null"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"validData", ",", 
+   RowBox[{"PlotStyle", "->", "Blue"}], ",", 
+   RowBox[{"PlotMarkers", "->", 
+    RowBox[{"{", 
+     RowBox[{"Automatic", ",", "Medium"}], "}"}]}], ",", 
+   RowBox[{"GridLines", "->", "Automatic"}], ",", 
+   RowBox[{"PlotRange", "->", "All"}], ",", 
+   RowBox[{"AxesLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<Muscle Number\>\"", ",", 
+      "\"\<Quantity of Principle Components\>\""}], "}"}]}], ",", 
+   RowBox[{
+   "PlotLabel", "->", 
+    "\"\<Quantity of Principle Components per muscle to retain 95% of \
+variation\>\""}], ",", 
+   RowBox[{"LabelingFunction", "->", "Above"}], ",", " ", 
+   RowBox[{"ImageSize", "->", "Large"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"validcells", ",", 
+   RowBox[{"PlotStyle", "->", "Blue"}], ",", 
+   RowBox[{"PlotMarkers", "->", 
+    RowBox[{"{", 
+     RowBox[{"Automatic", ",", "Medium"}], "}"}]}], ",", 
+   RowBox[{"GridLines", "->", "Automatic"}], ",", 
+   RowBox[{"PlotRange", "->", "All"}], ",", 
+   RowBox[{"AxesLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<Muscle Number\>\"", ",", "\"\<Quantity of cells\>\""}], 
+     "}"}]}], ",", 
+   RowBox[{"PlotLabel", "->", "\"\<Quantity of cells per muscle\>\""}], ",", 
+   RowBox[{"LabelingFunction", "->", "Above"}], ",", " ", 
+   RowBox[{"ImageSize", "->", "Large"}]}], "]"}]}], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.920104738802731*^9, 3.920104770595225*^9}, {
+   3.92010499830583*^9, 3.9201049996228104`*^9}, {3.9201050852174644`*^9, 
+   3.920105086233816*^9}, 3.9201051193426857`*^9, {3.921049164556904*^9, 
+   3.9210492164303875`*^9}, {3.921049383270142*^9, 3.9210493978840313`*^9}, {
+   3.921049492346851*^9, 3.921049504673849*^9}, {3.921049649469293*^9, 
+   3.921049655660007*^9}, {3.921049691713194*^9, 3.921049707963861*^9}, {
+   3.9210518086884956`*^9, 3.9210518116800823`*^9}, {3.921052021504383*^9, 
+   3.9210521041098733`*^9}, {3.921058013119087*^9, 3.921058132891775*^9}, {
+   3.921059850418455*^9, 3.9210598514514294`*^9}, {3.921060266994927*^9, 
+   3.921060273746687*^9}},
+ CellLabel->"In[27]:=",ExpressionUUID->"ffea2667-58b9-4c4b-84a0-6165822f4688"],
+
+Cell["\<\
+Find the mean of the amount of found vectors (Principle Components)\
+\>", "Subsubsection",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.920105048059919*^9, 3.920105051209112*^9}, 
+   3.9201051193426857`*^9, {3.921124342917713*^9, 3.921124448276884*^9}, {
+   3.9211244987324553`*^9, 
+   3.9211245039434648`*^9}},ExpressionUUID->"91b3bae1-4cbd-d541-be8b-\
+8d5e97c429cb"],
+
+Cell[BoxData[
+ RowBox[{"Round", "@", 
+  RowBox[{"Mean", "@", 
+   RowBox[{"validData", "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", "2"}], "]"}], "]"}]}]}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.921038249275591*^9, 3.92103831334687*^9}, 
+   3.921124471089226*^9},
+ CellLabel->"In[31]:=",ExpressionUUID->"48a1014c-3aac-b141-8d37-95ba4b545814"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Msd  value  calculation, muscle  to  fitted  point", "Subsubsection",
+ CellChangeTimes->{{3.919137020781719*^9, 3.9191370208507385`*^9}, {
+  3.919143474840093*^9, 
+  3.919143483121805*^9}},ExpressionUUID->"07f20c00-c9d8-ea4b-b62b-\
+108cb3c6c747"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Set", " ", "the", " ", "working", " ", "directory", " ", "to", " ", "the",
+     " ", "location", " ", "of", " ", "the", " ", "current", " ", 
+    "notebook"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"SetDirectory", "[", 
+     RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Initialize", " ", "an", " ", "empty", " ", "list", " ", "to", " ", 
+     "store", " ", "the", " ", "MSD", " ", "values", " ", "for", " ", "all", 
+     " ", "processed", " ", "muscles"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"msdValuesAll", "=", 
+     RowBox[{"{", "}"}]}], ";"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Iterate", " ", "over", " ", "a", " ", "predefined", " ", "range", " ", 
+     "of", " ", "muscle", " ", "indices", " ", "to", " ", "process", " ", 
+     "each", " ", 
+     RowBox[{"muscle", "'"}], "s", " ", "data"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Do", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"muscleFileName", "=", 
+        RowBox[{"\"\<Muscle_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "i", "]"}], "<>", 
+         "\"\<_All.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"pointsFileName", "=", 
+        RowBox[{"\"\<points_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "i", "]"}], "<>", 
+         "\"\<_All.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Check", " ", "if", " ", "both", " ", "required", " ", "files", " ", 
+         "exist", " ", "before", " ", "processing"}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"FileExistsQ", "[", "muscleFileName", "]"}], "&&", 
+          RowBox[{"FileExistsQ", "[", "pointsFileName", "]"}]}], ",", 
+         RowBox[{
+          RowBox[{"Print", "[", 
+           RowBox[{"\"\<Processing MSD of Muscle \>\"", "<>", 
+            RowBox[{"IntegerString", "[", "i", "]"}]}], "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Get", "[", "muscleFileName", "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Get", "[", "pointsFileName", "]"}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Calculate", " ", "the", " ", "mean", " ", "of", " ", "all", " ", 
+            "points", " ", "from", " ", "the", " ", "muscle", " ", "data"}], 
+           "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"meanPoints", "=", 
+           RowBox[{"Mean", "[", "pointsAll", "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Determine", " ", "the", " ", "variation", " ", "of", " ", "each", 
+            " ", "point", " ", "from", " ", "the", " ", "mean"}], "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{"variation", "=", 
+           RowBox[{"Transpose", "[", 
+            RowBox[{"Flatten", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"#", "-", "meanPoints"}], "&"}], "/@", "pointsAll"}], 
+              ",", 
+              RowBox[{"{", 
+               RowBox[{"2", ",", "3"}], "}"}]}], "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Perform", " ", "eigensystem", " ", "analysis", " ", "to", " ", 
+            "find", " ", "principal", " ", "components"}], "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"val", ",", "vec"}], "}"}], "=", 
+           RowBox[{"Eigensystem", "[", 
+            RowBox[{"Covariance", "[", "variation", "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Determine", " ", "the", " ", "number", " ", "of", " ", "vectors", 
+            " ", "needed", " ", "to", " ", "explain", " ", "99.9", "%", " ", 
+            "of", " ", "variance"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"nvec", "=", 
+           RowBox[{"First", "@", 
+            RowBox[{"Last", "@", 
+             RowBox[{"Position", "[", 
+              RowBox[{
+               RowBox[{"UnitStep", "[", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"Accumulate", "[", "val", "]"}], "/", 
+                   RowBox[{"Total", "[", "val", "]"}]}], ")"}], "-", 
+                 "0.999"}], "]"}], ",", "0"}], "]"}]}]}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"vecMat", "=", 
+           RowBox[{"vec", "[", 
+            RowBox[{"[", 
+             RowBox[{";;", "nvec"}], "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+            RowBox[{
+            "Number", " ", "of", " ", "vectors", " ", "predetermined", " ", 
+             "for", " ", "analysis"}], ",", " ", 
+            RowBox[{
+            "not", " ", "dynamically", " ", "calculated", " ", "here"}]}], 
+           "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"numbVecs", "=", "70"}], ";", "\[IndentingNewLine]", 
+          "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Fit", " ", "the", " ", "variation", " ", "points", " ", "to", " ",
+             "the", " ", "principal", " ", "components"}], "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{"fittedPoints", "=", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"FitVariationPoints", "[", 
+              RowBox[{
+              "#", ",", "meanPoints", ",", "vecMat", ",", "numbVecs"}], "]"}],
+              "&"}], "/@", "variation"}]}], ";", "\[IndentingNewLine]", 
+          "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+            RowBox[{
+            "Calculate", " ", "MSD", " ", "values", " ", "for", " ", "points",
+              " ", "fitted", " ", "to", " ", "the", " ", "principal", " ", 
+             "components"}], ",", 
+            RowBox[{
+            "relative", " ", "to", " ", "a", " ", "region", " ", "mesh"}]}], 
+           "*)"}], 
+          RowBox[{"msdValues", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"Module", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                "muscleRegionMesh", ",", "distanceToRegion", ",", 
+                 "fittedPointsForMuscle", ",", "distancesToFittedPoints"}], 
+                "}"}], ",", 
+               RowBox[{
+                RowBox[{"muscleRegionMesh", "=", 
+                 RowBox[{"MakeRegionMesh", "[", 
+                  RowBox[{
+                   RowBox[{"muscleAll", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], ",", "voxTemplate", ",", 
+                   "high"}], "]"}]}], ";", "\[IndentingNewLine]", 
+                RowBox[{"distanceToRegion", "=", 
+                 RowBox[{"RegionDistance", "[", "muscleRegionMesh", "]"}]}], 
+                ";", "\[IndentingNewLine]", 
+                RowBox[{"fittedPointsForMuscle", "=", 
+                 RowBox[{"fittedPoints", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}]}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"distancesToFittedPoints", "=", 
+                 RowBox[{
+                 "distanceToRegion", "/@", "fittedPointsForMuscle"}]}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"Mean", "[", "distancesToFittedPoints", "]"}]}]}], 
+              "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "1", ",", 
+               RowBox[{"Min", "[", 
+                RowBox[{
+                 RowBox[{"Length", "@", "muscleAll"}], ",", 
+                 RowBox[{"Length", "@", "fittedPoints"}]}], "]"}]}], "}"}]}], 
+            "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+            RowBox[{
+            "Visualize", " ", "MSD", " ", "values", " ", "with", " ", "a", 
+             " ", "Box"}], "-", 
+            RowBox[{"Whisker", " ", "Chart"}]}], "*)"}], 
+          RowBox[{"Print", "[", 
+           RowBox[{"BoxWhiskerChart", "[", 
+            RowBox[{"msdValues", ",", "\"\<Outliers\>\"", ",", 
+             RowBox[{"PlotRange", "->", "All"}], ",", 
+             RowBox[{"GridLines", "->", "Automatic"}], ",", 
+             RowBox[{"ChartLabels", "->", 
+              RowBox[{"Table", "[", 
+               RowBox[{
+                RowBox[{"\"\<Muscle \>\"", "<>", 
+                 RowBox[{"IntegerString", "[", "i", "]"}]}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"i", ",", "1", ",", 
+                  RowBox[{"Length", "[", "msdValues", "]"}]}], "}"}]}], 
+               "]"}]}], ",", 
+             RowBox[{"ChartStyle", "->", "Red"}], ",", 
+             RowBox[{"ImageSize", "->", "Large"}], ",", 
+             RowBox[{"AspectRatio", "->", "1"}]}], "]"}], "]"}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Save", " ", "the", " ", "MSD", " ", "values", " ", "to", " ", "a",
+             " ", "file"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"saveFileName", "=", 
+           RowBox[{"\"\<MSD_Values_\>\"", "<>", 
+            RowBox[{"IntegerString", "[", "i", "]"}], "<>", "\"\<_Vecs_\>\"", 
+            "<>", 
+            RowBox[{"IntegerString", "[", "numbVecs", "]"}], "<>", 
+            "\"\<.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"Print", "[", 
+           RowBox[{"\"\<Saving file: \>\"", ",", 
+            RowBox[{"FileNameJoin", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Directory", "[", "]"}], ",", "saveFileName"}], "}"}], 
+             "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"DumpSave", "[", 
+           RowBox[{"saveFileName", ",", 
+            RowBox[{"{", "msdValues", "}"}]}], "]"}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Append", " ", "the", " ", "computed", " ", "MSD", " ", "values", 
+            " ", "to", " ", "the", " ", "list", " ", "for", " ", "all", " ", 
+            "muscles"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"AppendTo", "[", 
+           RowBox[{"msdValuesAll", ",", "msdValues"}], "]"}], ";"}], ",", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "Inform", " ", "the", " ", "user", " ", "if", " ", "required", " ", 
+           "files", " ", "are", " ", "not", " ", "found"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"Print", "[", 
+           RowBox[{
+           "\"\<File not found for muscle number \>\"", ",", "i", ",", 
+            "\"\<: \>\"", ",", "muscleFileName", ",", "\"\< or \>\"", ",", 
+            "pointsFileName"}], "]"}], ";"}]}], "]"}]}], 
+      "\[IndentingNewLine]", ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "17"}], "}"}]}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Save", " ", "the", " ", "complete", " ", "set", " ", "of", " ", "MSD", 
+     " ", "values", " ", "across", " ", "all", " ", "muscles", " ", "for", 
+     " ", "further", " ", "analysis"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"DumpSave", "[", 
+     RowBox[{
+      RowBox[{"\"\<MSD_Values_All_Vecs_\>\"", "<>", 
+       RowBox[{"IntegerString", "[", "numbVecs", "]"}], "<>", "\"\<.mx\>\""}],
+       ",", 
+      RowBox[{"{", "msdValuesAll", "}"}]}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Generate", " ", "and", " ", "display", " ", "a", " ", "Box"}], 
+     "-", 
+     RowBox[{
+     "Whisker", " ", "Chart", " ", "for", " ", "the", " ", "MSD", " ", 
+      "values", " ", "of", " ", "all", " ", "muscles"}]}], "*)"}], "\n", 
+   RowBox[{"Labeled", "[", 
+    RowBox[{
+     RowBox[{"BoxWhiskerChart", "[", 
+      RowBox[{"msdValuesAll", ",", "\"\<Outliers\>\"", ",", 
+       RowBox[{"PlotRange", "->", "All"}], ",", 
+       RowBox[{"GridLines", "->", "Automatic"}], ",", 
+       RowBox[{"ChartLabels", "->", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"\"\<Muscle \>\"", "<>", 
+           RowBox[{"IntegerString", "[", "i", "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", "1", ",", 
+            RowBox[{"Length", "[", "msdValuesAll", "]"}]}], "}"}]}], "]"}]}], 
+       ",", 
+       RowBox[{
+       "PlotLabel", "->", "\"\<MSD with 15 Principle Compontents\>\""}], ",", 
+       RowBox[{"ChartStyle", "->", "Red"}], ",", 
+       RowBox[{"ImageSize", "->", "Large"}], ",", 
+       RowBox[{"AspectRatio", "->", "1"}]}], "]"}], ",", "\"\<MSD [mm]\>\"", 
+     ",", "Left"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.919138463548532*^9, 3.919138463548532*^9}, {
+   3.919138554103641*^9, 3.919138609840977*^9}, {3.9191387793495464`*^9, 
+   3.919138864694979*^9}, {3.9191389220148067`*^9, 3.919138923314974*^9}, {
+   3.919138981283579*^9, 3.919138985282387*^9}, {3.919139060414543*^9, 
+   3.919139062446724*^9}, 3.9191391765024242`*^9, {3.9191395214683*^9, 
+   3.919139570474226*^9}, {3.91913961979508*^9, 3.919139674981022*^9}, {
+   3.919139733226427*^9, 3.919139736366053*^9}, {3.9191398361858788`*^9, 
+   3.919139871067124*^9}, {3.919140185163889*^9, 3.9191402364395237`*^9}, {
+   3.9191405164102135`*^9, 3.919140523591449*^9}, {3.919143171096957*^9, 
+   3.919143174429272*^9}, 3.9191432233711567`*^9, 3.919143382146414*^9, 
+   3.919148918199634*^9, {3.9191489496439133`*^9, 3.919148949742857*^9}, {
+   3.919151127168724*^9, 3.919151136439119*^9}, {3.919153470458854*^9, 
+   3.919153470962206*^9}, {3.919234378633543*^9, 3.919234402973524*^9}, {
+   3.9192344607526035`*^9, 3.919234470453308*^9}, {3.919234547443621*^9, 
+   3.919234547603436*^9}, {3.9192368982235794`*^9, 3.919236898339485*^9}, {
+   3.9192394253175163`*^9, 3.91923943112492*^9}, 3.9198405533433867`*^9, 
+   3.919840584367706*^9, {3.919841915347217*^9, 3.919841916299864*^9}, {
+   3.921053007614336*^9, 3.9210530122856064`*^9}, 3.9211241091665177`*^9, 
+   3.9211294869790936`*^9, {3.9211310010516458`*^9, 3.921131032252825*^9}, {
+   3.921135798540068*^9, 3.921135852634615*^9}, {3.921135888894585*^9, 
+   3.921135891916743*^9}, {3.921135929592207*^9, 3.92113597385108*^9}, 
+   3.9211360129989038`*^9, {3.921140593991869*^9, 3.921140631657753*^9}, 
+   3.9211581740044823`*^9, {3.9211598029926357`*^9, 
+   3.9211598250233383`*^9}},ExpressionUUID->"cba23fcb-6848-6643-8531-\
+700ef105cace"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Msd  value  calculation, muscle  to  fitted  point 95% of variation\
+\>", "Subsubsection",
+ CellChangeTimes->{{3.919137020781719*^9, 3.9191370208507385`*^9}, {
+  3.919143474840093*^9, 3.919143483121805*^9}, {3.921063492350395*^9, 
+  3.9210635008497353`*^9}},ExpressionUUID->"b51d62ed-8315-cb46-a850-\
+503f74893c1a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Set", " ", "the", " ", "voxel", " ", "template", " ", "and", " ", 
+    "thresholds", " ", "for", " ", "mesh", " ", "generation"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"voxTemplate", "=", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"high", "=", "2"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"low", "=", "8"}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Set", " ", "the", " ", "working", " ", "directory", " ", "to", " ", 
+     "the", " ", 
+     RowBox[{"notebook", "'"}], "s", " ", "directory"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"SetDirectory", "[", 
+     RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Initialize", " ", "an", " ", "empty", " ", "list", " ", "to", " ", 
+     "store", " ", "MSD", " ", "values", " ", "for", " ", "all", " ", 
+     "muscles"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"msdValuesAll", "=", 
+     RowBox[{"{", "}"}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Loop", " ", "over", " ", "muscle", " ", "datasets", " ", "numbered", " ",
+      "from", " ", "1", " ", "to", " ", "17"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Do", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"muscleFileName", "=", 
+        RowBox[{"\"\<Muscle_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "i", "]"}], "<>", 
+         "\"\<_All.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"pointsFileName", "=", 
+        RowBox[{"\"\<points_\>\"", "<>", 
+         RowBox[{"IntegerString", "[", "i", "]"}], "<>", 
+         "\"\<_All.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Check", " ", "if", " ", "the", " ", "necessary", " ", "files", " ", 
+         "exist", " ", "for", " ", "the", " ", "current", " ", "muscle", " ", 
+         "dataset"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"FileExistsQ", "[", "muscleFileName", "]"}], "&&", 
+          RowBox[{"FileExistsQ", "[", "pointsFileName", "]"}]}], ",", 
+         RowBox[{
+          RowBox[{"Print", "[", 
+           RowBox[{"\"\<Processing MSD of \>\"", "<>", 
+            RowBox[{"IntegerString", "[", "i", "]"}]}], "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Get", "[", "muscleFileName", "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Get", "[", "pointsFileName", "]"}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Calculate", " ", "the", " ", "mean", " ", "of", " ", "all", " ", 
+            "points", " ", "and", " ", "determine", " ", "the", " ", 
+            "principal", " ", "components"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"meanPoints", "=", 
+           RowBox[{"Mean", "[", "pointsAll", "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"variation", "=", 
+           RowBox[{"Transpose", "[", 
+            RowBox[{"Flatten", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"#", "-", "meanPoints"}], "&"}], "/@", "pointsAll"}], 
+              ",", 
+              RowBox[{"{", 
+               RowBox[{"2", ",", "3"}], "}"}]}], "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"val", ",", "vec"}], "}"}], "=", 
+           RowBox[{"Eigensystem", "[", 
+            RowBox[{"Covariance", "[", "variation", "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"nvec", "=", 
+           RowBox[{"First", "@", 
+            RowBox[{"Last", "@", 
+             RowBox[{"Position", "[", 
+              RowBox[{
+               RowBox[{"UnitStep", "[", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"Accumulate", "[", "val", "]"}], "/", 
+                   RowBox[{"Total", "[", "val", "]"}]}], ")"}], "-", "0.95"}],
+                 "]"}], ",", "0"}], "]"}]}]}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"vecMat", "=", 
+           RowBox[{"vec", "[", 
+            RowBox[{"[", 
+             RowBox[{";;", "nvec"}], "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Fit", " ", "the", " ", "variation", " ", "points", " ", "to", " ",
+             "the", " ", "principal", " ", "components"}], "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{"fittedPoints", "=", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"FitVariationPoints", "[", 
+              RowBox[{"#", ",", "meanPoints", ",", "vecMat", ",", "nvec"}], 
+              "]"}], "&"}], "/@", "variation"}]}], ";", "\[IndentingNewLine]",
+           "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Calculate", " ", "the", " ", "MSD", " ", "values", " ", "for", 
+            " ", "the", " ", "fitted", " ", "points", " ", "relative", " ", 
+            "to", " ", "a", " ", "region", " ", "mesh"}], "*)"}], 
+          RowBox[{"msdValues", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"Module", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                "muscleRegionMesh", ",", "distanceToRegion", ",", 
+                 "fittedPointsForMuscle", ",", "distancesToFittedPoints"}], 
+                "}"}], ",", 
+               RowBox[{
+                RowBox[{"muscleRegionMesh", "=", 
+                 RowBox[{"MakeRegionMesh", "[", 
+                  RowBox[{
+                   RowBox[{"muscleAll", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], ",", "voxTemplate", ",", 
+                   "high"}], "]"}]}], ";", "\[IndentingNewLine]", 
+                RowBox[{"distanceToRegion", "=", 
+                 RowBox[{"RegionDistance", "[", "muscleRegionMesh", "]"}]}], 
+                ";", "\[IndentingNewLine]", 
+                RowBox[{"fittedPointsForMuscle", "=", 
+                 RowBox[{"fittedPoints", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}]}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"distancesToFittedPoints", "=", 
+                 RowBox[{
+                 "distanceToRegion", "/@", "fittedPointsForMuscle"}]}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"Mean", "[", "distancesToFittedPoints", "]"}]}]}], 
+              "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "1", ",", 
+               RowBox[{"Min", "[", 
+                RowBox[{
+                 RowBox[{"Length", "@", "muscleAll"}], ",", 
+                 RowBox[{"Length", "@", "fittedPoints"}]}], "]"}]}], "}"}]}], 
+            "]"}]}], ";", "\n", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+            RowBox[{
+            "Visualize", " ", "the", " ", "MSD", " ", "values", " ", "with", 
+             " ", "a", " ", "Box"}], "-", 
+            RowBox[{"Whisker", " ", "Chart"}]}], "*)"}], 
+          RowBox[{"Print", "[", 
+           RowBox[{"BoxWhiskerChart", "[", 
+            RowBox[{"msdValues", ",", "\"\<Outliers\>\"", ",", 
+             RowBox[{"PlotRange", "->", "All"}], ",", 
+             RowBox[{"GridLines", "->", "Automatic"}], ",", 
+             RowBox[{"ChartLabels", "->", 
+              RowBox[{"Table", "[", 
+               RowBox[{
+                RowBox[{"\"\<Muscle \>\"", "<>", 
+                 RowBox[{"IntegerString", "[", "i", "]"}]}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"i", ",", "1", ",", 
+                  RowBox[{"Length", "[", "msdValues", "]"}]}], "}"}]}], 
+               "]"}]}], ",", 
+             RowBox[{"ChartStyle", "->", "Red"}], ",", 
+             RowBox[{"ImageSize", "->", "Large"}], ",", 
+             RowBox[{"AspectRatio", "->", "1"}]}], "]"}], "]"}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Save", " ", "the", " ", "computed", " ", "MSD", " ", "values", 
+            " ", "to", " ", "a", " ", "file"}], "*)"}], "\[IndentingNewLine]", 
+          RowBox[{"saveFileName", "=", 
+           RowBox[{"\"\<MSD_Values_\>\"", "<>", 
+            RowBox[{"IntegerString", "[", "i", "]"}], "<>", "\"\<_Vecs_\>\"", 
+            "<>", 
+            RowBox[{"IntegerString", "[", "nvec", "]"}], "<>", 
+            "\"\<.mx\>\""}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"Print", "[", 
+           RowBox[{"\"\<Saving file: \>\"", ",", 
+            RowBox[{"FileNameJoin", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Directory", "[", "]"}], ",", "saveFileName"}], "}"}], 
+             "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"DumpSave", "[", 
+           RowBox[{"saveFileName", ",", 
+            RowBox[{"{", "msdValues", "}"}]}], "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"AppendTo", "[", 
+           RowBox[{"msdValuesAll", ",", "msdValues"}], "]"}], ";"}], ",", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "Print", " ", "an", " ", "error", " ", "message", " ", "if", " ", 
+           "the", " ", "necessary", " ", "files", " ", "are", " ", "not", " ",
+            "found"}], "*)"}], "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"Print", "[", 
+           RowBox[{
+           "\"\<File not found for muscle number \>\"", ",", "i", ",", 
+            "\"\<: \>\"", ",", "muscleFileName", ",", "\"\< or \>\"", ",", 
+            "pointsFileName"}], "]"}], ";"}]}], "]"}]}], 
+      "\[IndentingNewLine]", ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "17"}], "}"}]}], "]"}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Save", " ", "all", " ", "MSD", " ", "values", " ", "across", " ", 
+     "muscles", " ", "for", " ", "further", " ", "analysis"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"DumpSave", "[", 
+     RowBox[{
+      RowBox[{"\"\<MSD_Values_All_95%\>\"", "<>", 
+       RowBox[{"IntegerString", "[", "nvec", "]"}], "<>", "\"\<.mx\>\""}], 
+      ",", 
+      RowBox[{"{", "msdValuesAll", "}"}]}], "]"}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Create", " ", "a", " ", "Box"}], "-", 
+     RowBox[{"Whisker", " ", "Chart", " ", "for", " ", "all", " ", 
+      RowBox[{"muscles", "'"}], " ", "MSD", " ", "values"}]}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Labeled", "[", 
+    RowBox[{
+     RowBox[{"BoxWhiskerChart", "[", 
+      RowBox[{"msdValuesAll", ",", "\"\<Outliers\>\"", ",", 
+       RowBox[{"PlotRange", "->", "All"}], ",", 
+       RowBox[{"GridLines", "->", "Automatic"}], ",", 
+       RowBox[{"ChartLabels", "->", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"\"\<Muscle \>\"", "<>", 
+           RowBox[{"IntegerString", "[", "i", "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", "1", ",", 
+            RowBox[{"Length", "[", "msdValuesAll", "]"}]}], "}"}]}], "]"}]}], 
+       ",", 
+       RowBox[{
+       "PlotLabel", "->", "\"\<MSD with 15 Principle Compontents\>\""}], ",", 
+       RowBox[{"ChartStyle", "->", "Red"}], ",", 
+       RowBox[{"ImageSize", "->", "Large"}], ",", 
+       RowBox[{"AspectRatio", "->", "1"}]}], "]"}], ",", "\"\<MSD [mm]\>\"", 
+     ",", "Left"}], "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.921054160184105*^9, 3.921054212851963*^9}, {
+   3.921054447370661*^9, 3.9210544680011597`*^9}, {3.921054541009363*^9, 
+   3.921054558677565*^9}, {3.9210579172443504`*^9, 3.9210579214313087`*^9}, {
+   3.92106348696719*^9, 3.921063487747839*^9}, {3.9211241194818554`*^9, 
+   3.921124155750658*^9}, {3.921124193474615*^9, 3.921124210191174*^9}, {
+   3.921129670704546*^9, 3.921129688807566*^9}, {3.921129789521483*^9, 
+   3.921129852414141*^9}, {3.921129944208437*^9, 3.921129947401085*^9}, {
+   3.92113094256036*^9, 3.921130982831347*^9}, 
+   3.921159815153631*^9},ExpressionUUID->"509eae85-c40a-664d-b23f-\
+f52a02129942"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Load in MSD Values of all muscles with 15 vectors (Principle components)\
+\>", "Subsubsection",
+ CellChangeTimes->{{3.920105048059919*^9, 3.920105051209112*^9}, 
+   3.9201051193426857`*^9, {3.921124342917713*^9, 3.9211243724170446`*^9}, {
+   3.921124478668774*^9, 
+   3.921124511785601*^9}},ExpressionUUID->"549d4f4a-a864-ea4a-99ae-\
+fecc6c44c81b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", "\"\<MSD_Values_All_Vecs_15.mx\>\"", "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.921048409203633*^9, 3.921048414533993*^9}, {
+  3.921049916873136*^9, 3.9210499181809387`*^9}},
+ CellLabel->"In[32]:=",ExpressionUUID->"a30958c9-d6a9-4344-9c6c-71dc3c8101b4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Test the Correlation between MSD value, cells and vectors. Run code twice!\
+\>", "Subsubsection",
+ CellChangeTimes->{{3.920105048059919*^9, 3.920105051209112*^9}, 
+   3.9201051193426857`*^9, {3.921124342917713*^9, 3.9211243724170446`*^9}, {
+   3.921124542209797*^9, 3.92112456949354*^9}, {3.921155841294979*^9, 
+   3.921155849064129*^9}},ExpressionUUID->"5a5356d4-e7fc-c043-b50f-\
+1b8c3fc40991"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Clean", " ", "the", " ", "msdValuesAll", " ", "list", " ", "by", " ", 
+    "keeping", " ", "only", " ", "the", " ", "sublists", " ", "that", " ", 
+    "contain", " ", "all", " ", "numeric", " ", "values"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"msdValuesAllCleaned", "=", 
+     RowBox[{"Select", "[", 
+      RowBox[{"msdValuesAll", ",", 
+       RowBox[{
+        RowBox[{"And", "@@", 
+         RowBox[{"(", 
+          RowBox[{"NumericQ", "/@", "#"}], ")"}]}], "&"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Compute", " ", "the", " ", "median", " ", "of", " ", "each", " ", 
+     "sublist", " ", "in", " ", "msdValuesAllCleaned"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"msdValuesMedian", "=", 
+     RowBox[{"Median", "/@", "msdValuesAllCleaned"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Clean", " ", "the", " ", "allnvec", " ", "list", " ", "by", " ", 
+     "removing", " ", "the", " ", "6", "th", " ", "and", " ", "11", "th", " ",
+      "elements"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"allnvecCleaned", "=", 
+     RowBox[{"Delete", "[", 
+      RowBox[{"allnvec", ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", "6", "}"}], ",", 
+         RowBox[{"{", "11", "}"}]}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"muscleNumbers", "=", 
+     RowBox[{"DeleteCases", "[", 
+      RowBox[{
+       RowBox[{"Range", "[", "17", "]"}], ",", 
+       RowBox[{"x_", "/;", 
+        RowBox[{
+         RowBox[{"x", "==", "6"}], "||", 
+         RowBox[{"x", "==", "11"}]}]}]}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Pair", " ", "the", " ", "cleaned", " ", "nvec", " ", "data", " ", 
+      "with", " ", "the", " ", "median", " ", "msd", " ", "values"}], ",", 
+     " ", 
+     RowBox[{
+     "excluding", " ", "pairs", " ", "with", " ", "Null", " ", "msd", " ", 
+      "values"}]}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"pairedData", "=", 
+     RowBox[{"DeleteCases", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "[", 
+        RowBox[{"{", 
+         RowBox[{"allnvecCleaned", ",", "msdValuesMedian"}], "}"}], "]"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"_", ",", "Null"}], "}"}]}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"labeledPairedData", "=", 
+     RowBox[{"MapThread", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Labeled", "[", 
+         RowBox[{"#1", ",", 
+          RowBox[{"Style", "[", 
+           RowBox[{"#2", ",", "16", ",", "Bold"}], "]"}], ",", "Above"}], 
+         "]"}], "&"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"pairedData", ",", "muscleNumbers"}], "}"}]}], "]"}]}], ";"}],
+    "\[IndentingNewLine]", "\n", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Pair", " ", "the", " ", "allcells", " ", "data", " ", "with", " ", 
+      "the", " ", "median", " ", "msd", " ", "values"}], ",", " ", 
+     RowBox[{
+     "excluding", " ", "pairs", " ", "with", " ", "Null", " ", "msd", " ", 
+      "values"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"pairedcells", "=", 
+     RowBox[{"DeleteCases", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "[", 
+        RowBox[{"{", 
+         RowBox[{"allcells", ",", "msdValuesMedian"}], "}"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"_", ",", "Null"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"labeledPairedCells", "=", 
+     RowBox[{"MapThread", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Labeled", "[", 
+         RowBox[{"#1", ",", 
+          RowBox[{"Style", "[", 
+           RowBox[{"#2", ",", "16", ",", "Bold"}], "]"}], ",", "Above"}], 
+         "]"}], "&"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"pairedcells", ",", "muscleNumbers"}], "}"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Pair", " ", "the", " ", "allcells", " ", "data", " ", "with", " ", 
+      "the", " ", "cleaned", " ", "nvec", " ", "data"}], ",", " ", 
+     RowBox[{
+     "excluding", " ", "pairs", " ", "with", " ", "Null", " ", "values"}]}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"pairedDatacells", "=", 
+     RowBox[{"DeleteCases", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "[", 
+        RowBox[{"{", 
+         RowBox[{"allcells", ",", "allnvecCleaned"}], "}"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"_", ",", "Null"}], "}"}]}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"labeledPairedDataCells", "=", 
+     RowBox[{"MapThread", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Labeled", "[", 
+         RowBox[{"#1", ",", 
+          RowBox[{"Style", "[", 
+           RowBox[{"#2", ",", "16", ",", "Bold"}], "]"}], ",", "Above"}], 
+         "]"}], "&"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"pairedDatacells", ",", "muscleNumbers"}], "}"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Calculate", " ", "the", " ", "Pearson", " ", "correlation", " ", 
+     "coefficient", " ", "between", " ", "the", " ", "two", " ", "datasets", 
+     " ", "in", " ", "each", " ", "paired", " ", "list"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"correlationCoefficient", "=", 
+     RowBox[{"Correlation", "[", 
+      RowBox[{
+       RowBox[{"pairedData", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", "1"}], "]"}], "]"}], ",", 
+       RowBox[{"pairedData", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", "2"}], "]"}], "]"}]}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"correlationCoefficientcells", "=", 
+     RowBox[{"Correlation", "[", 
+      RowBox[{
+       RowBox[{"pairedcells", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", "1"}], "]"}], "]"}], ",", 
+       RowBox[{"pairedcells", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", "2"}], "]"}], "]"}]}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"correlationCoefficientDatacells", "=", 
+     RowBox[{"Correlation", "[", 
+      RowBox[{
+       RowBox[{"pairedDatacells", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", "1"}], "]"}], "]"}], ",", 
+       RowBox[{"pairedDatacells", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", "2"}], "]"}], "]"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Perform", " ", "linear", " ", "regression", " ", "on", " ", "each", " ",
+       "paired", " ", "dataset", " ", "to", " ", "fit", " ", "a", " ", 
+      "model", " ", "of", " ", "the", " ", "form", " ", "y"}], "=", 
+     RowBox[{"mx", "+", "b"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"linearFit", "=", 
+     RowBox[{"LinearModelFit", "[", 
+      RowBox[{"pairedData", ",", "x", ",", "x"}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"linearFitcells", "=", 
+     RowBox[{"LinearModelFit", "[", 
+      RowBox[{"pairedcells", ",", "x", ",", "x"}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"linearFitDatacells", "=", 
+     RowBox[{"LinearModelFit", "[", 
+      RowBox[{"pairedDatacells", ",", "x", ",", "x"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Plot", " ", "the", " ", "paired", " ", "data", " ", "along", " ", "with",
+      " ", "the", " ", "linear", " ", "fit", " ", "for", " ", "msd", " ", 
+     "values", " ", 
+     RowBox[{"vs", ".", "principal"}], " ", "components"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Show", "[", 
+    RowBox[{
+     RowBox[{"ListPlot", "[", 
+      RowBox[{"labeledPairedData", ",", 
+       RowBox[{"PlotStyle", "->", "Blue"}], ",", 
+       RowBox[{"PlotMarkers", "->", 
+        RowBox[{"{", 
+         RowBox[{"Automatic", ",", "Medium"}], "}"}]}], ",", 
+       RowBox[{"AxesLabel", "->", 
+        RowBox[{"{", 
+         RowBox[{
+         "\"\<Quantity of PCs\>\"", ",", 
+          "\"\<MSD value with 15 Principle Components [mm]\>\""}], "}"}]}], 
+       ",", 
+       RowBox[{"PlotLegends", "->", "None"}]}], "]"}], ",", 
+     RowBox[{"Plot", "[", 
+      RowBox[{
+       RowBox[{"linearFit", "[", "x", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", 
+         RowBox[{"Min", "[", "allnvecCleaned", "]"}], ",", 
+         RowBox[{"Max", "[", "allnvecCleaned", "]"}]}], "}"}], ",", 
+       RowBox[{"PlotStyle", "->", "Red"}], ",", 
+       RowBox[{"PlotLegends", "->", 
+        RowBox[{"{", "\"\<Linear Fit\>\"", "}"}]}]}], "]"}], ",", 
+     RowBox[{"ImageSize", "->", "Large"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<MSD vs PC's\>\""}], ",", 
+     RowBox[{"LabelStyle", "->", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"FontSize", "->", "14"}], ",", 
+        RowBox[{"FontFamily", "->", "\"\<Helvetica\>\""}]}], "}"}]}]}], "]"}],
+    "\n", "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Plot", " ", "the", " ", "paired", " ", "data", " ", "along", " ", "with",
+      " ", "the", " ", "linear", " ", "fit", " ", "for", " ", "msd", " ", 
+     "values", " ", 
+     RowBox[{"vs", ".", "cell"}], " ", "quantities"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Show", "[", 
+    RowBox[{
+     RowBox[{"ListPlot", "[", 
+      RowBox[{"labeledPairedCells", ",", 
+       RowBox[{"PlotStyle", "->", "Blue"}], ",", 
+       RowBox[{"PlotMarkers", "->", 
+        RowBox[{"{", 
+         RowBox[{"Automatic", ",", "Medium"}], "}"}]}], ",", 
+       RowBox[{"AxesLabel", "->", 
+        RowBox[{"{", 
+         RowBox[{
+         "\"\<Quantity of cells\>\"", ",", 
+          "\"\<MSD value with 15 Principle Components [mm]\>\""}], "}"}]}], 
+       ",", 
+       RowBox[{"PlotLegends", "->", "None"}]}], "]"}], ",", 
+     RowBox[{"Plot", "[", 
+      RowBox[{
+       RowBox[{"linearFitcells", "[", "x", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", 
+         RowBox[{"Min", "[", "allcells", "]"}], ",", 
+         RowBox[{"Max", "[", "allcells", "]"}]}], "}"}], ",", 
+       RowBox[{"PlotStyle", "->", "Red"}], ",", 
+       RowBox[{"PlotLegends", "->", 
+        RowBox[{"{", "\"\<Linear Fit\>\"", "}"}]}]}], "]"}], ",", 
+     RowBox[{"ImageSize", "->", "Large"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<MSD vs cells\>\""}], ",", 
+     RowBox[{"LabelStyle", "->", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"FontSize", "->", "14"}], ",", 
+        RowBox[{"FontFamily", "->", "\"\<Helvetica\>\""}]}], "}"}]}]}], "]"}],
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Plot", " ", "the", " ", "paired", " ", "data", " ", "along", " ", "with",
+      " ", "the", " ", "linear", " ", "fit", " ", "for", " ", "cell", " ", 
+     "quantities", " ", 
+     RowBox[{"vs", ".", "principal"}], " ", "components"}], "*)"}], "\n", 
+   RowBox[{"Show", "[", 
+    RowBox[{
+     RowBox[{"ListPlot", "[", 
+      RowBox[{"labeledPairedDataCells", ",", 
+       RowBox[{"PlotStyle", "->", "Blue"}], ",", 
+       RowBox[{"PlotMarkers", "->", 
+        RowBox[{"{", 
+         RowBox[{"Automatic", ",", "Medium"}], "}"}]}], ",", 
+       RowBox[{"AxesLabel", "->", 
+        RowBox[{"{", 
+         RowBox[{
+         "\"\<Quantity of cells\>\"", ",", 
+          "\"\<Quantity of Principle Components\>\""}], "}"}]}], ",", 
+       RowBox[{"PlotLegends", "->", "None"}]}], "]"}], ",", 
+     RowBox[{"Plot", "[", 
+      RowBox[{
+       RowBox[{"linearFitDatacells", "[", "x", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", 
+         RowBox[{"Min", "[", "allcells", "]"}], ",", 
+         RowBox[{"Max", "[", "allcells", "]"}]}], "}"}], ",", 
+       RowBox[{"PlotStyle", "->", "Red"}], ",", 
+       RowBox[{"PlotLegends", "->", 
+        RowBox[{"{", "\"\<Linear Fit\>\"", "}"}]}]}], "]"}], ",", 
+     RowBox[{"ImageSize", "->", "Large"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<Cells vs PC's\>\""}], ",", 
+     RowBox[{"LabelStyle", "->", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"FontSize", "->", "14"}], ",", 
+        RowBox[{"FontFamily", "->", "\"\<Helvetica\>\""}]}], "}"}]}]}], "]"}],
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Obtain", " ", "the", " ", "R"}], "-", 
+     RowBox[{
+     "squared", " ", "value", " ", "for", " ", "each", " ", "linear", " ", 
+      "model", " ", "to", " ", "assess", " ", "the", " ", "fit", " ", 
+      "quality"}]}], "*)"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<R-squared for msd vs. principal components: \>\"", ",", 
+     RowBox[{"linearFit", "[", "\"\<RSquared\>\"", "]"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<R-squared for msd vs. cell quantities: \>\"", ",", 
+     RowBox[{"linearFitcells", "[", "\"\<RSquared\>\"", "]"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{
+    "\"\<R-squared for cell quantities vs. principal components: \>\"", ",", 
+     RowBox[{"linearFitDatacells", "[", "\"\<RSquared\>\"", "]"}]}], "]"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Perform", " ", "an", " ", "ANOVA", " ", "test", " ", "on", " ", "each", 
+      " ", "linear", " ", "model", " ", "and", " ", "extract", " ", "the", 
+      " ", "p"}], "-", 
+     RowBox[{
+     "value", " ", "for", " ", "the", " ", "slope", " ", "to", " ", "test", 
+      " ", "the", " ", "null", " ", "hypothesis", " ", "that", " ", "the", 
+      " ", "slope", " ", "is", " ", "zero"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<P-value for slope (msd vs. principal components): \>\"", ",", 
+     RowBox[{
+      RowBox[{"linearFit", "[", "\"\<ANOVATablePValues\>\"", "]"}], "[", 
+      RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<P-value for slope (msd vs. cell quantities): \>\"", ",", 
+     RowBox[{
+      RowBox[{"linearFitcells", "[", "\"\<ANOVATablePValues\>\"", "]"}], "[", 
+      RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{
+    "\"\<P-value for slope (cell quantities vs. principal components): \>\"", 
+     ",", 
+     RowBox[{
+      RowBox[{"linearFitDatacells", "[", "\"\<ANOVATablePValues\>\"", "]"}], 
+      "[", 
+      RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.920375519142073*^9, 3.9203755325108757`*^9}, {
+   3.9203755720012016`*^9, 3.9203757206488743`*^9}, {3.9203757613681602`*^9, 
+   3.920375761833567*^9}, {3.920375873347332*^9, 3.920375900945776*^9}, 
+   3.920376023528614*^9, 3.920376160361433*^9, {3.920376330325289*^9, 
+   3.920376331998003*^9}, 3.920376795216141*^9, {3.920376834319404*^9, 
+   3.92037684430554*^9}, {3.920376937231655*^9, 3.920376940466336*^9}, {
+   3.920377212818636*^9, 3.92037723701626*^9}, {3.920377276591505*^9, 
+   3.920377278684101*^9}, {3.9210499445978184`*^9, 3.9210501280127087`*^9}, {
+   3.921050158293871*^9, 3.921050225858118*^9}, {3.9210502665822716`*^9, 
+   3.921050335240532*^9}, {3.92105036666382*^9, 3.921050388057667*^9}, {
+   3.921050653854978*^9, 3.9210507727086716`*^9}, {3.921050816930233*^9, 
+   3.921050842661227*^9}, {3.921050887157904*^9, 3.921050921247793*^9}, {
+   3.921050975926225*^9, 3.921050976414459*^9}, {3.921051032489357*^9, 
+   3.921051273329666*^9}, 3.921051353095991*^9, {3.92105138981216*^9, 
+   3.921051502491526*^9}, {3.9210519176128044`*^9, 3.921051937259075*^9}, {
+   3.921051975388994*^9, 3.921051986871008*^9}, 3.921058679400982*^9, {
+   3.921058709923294*^9, 3.92105873768802*^9}, {3.921059974656822*^9, 
+   3.9210601991705623`*^9}, {3.9211246328379345`*^9, 3.921124678651577*^9}, {
+   3.9211251588098106`*^9, 3.921125166175171*^9}, {3.9211561847436023`*^9, 
+   3.921156187940666*^9}, 
+   3.9216146585288486`*^9},ExpressionUUID->"9a3d600c-7d34-7e48-9e1f-\
+56f594df7dd4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["At what location of the muscle is the highest error ", "Subsubsection",
+ CellChangeTimes->{
+  3.919846892289034*^9, {3.919846924378355*^9, 3.9198471218420277`*^9}, {
+   3.919847235171913*^9, 3.919847275601837*^9}, {3.919847307412268*^9, 
+   3.919847425423244*^9}, {3.920103608714161*^9, 3.920103612013306*^9}, 
+   3.920375448555981*^9, {3.920375501551024*^9, 3.920375504958927*^9}, {
+   3.920376963365113*^9, 3.920376963942444*^9}, {3.92037701211936*^9, 
+   3.9203770237604084`*^9}, {3.920377190088835*^9, 3.920377197191073*^9}, {
+   3.921060448233631*^9, 
+   3.921060502072932*^9}},ExpressionUUID->"c9bf8fdc-f25b-d248-b6ee-\
+182be3d5e7b2"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Musclenumber", "=", "12"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Get", "[", 
+   RowBox[{"\"\<Muscle_\>\"", "<>", 
+    RowBox[{"IntegerString", "[", "Musclenumber", "]"}], "<>", 
+    "\"\<_All.mx\>\""}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Get", "[", 
+   RowBox[{"\"\<MuscleMeanReg_\>\"", "<>", 
+    RowBox[{"IntegerString", "[", "Musclenumber", "]"}], "<>", 
+    "\"\<.mx\>\""}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Get", "[", 
+    RowBox[{"\"\<points_\>\"", "<>", 
+     RowBox[{"IntegerString", "[", "Musclenumber", "]"}], "<>", 
+     "\"\<_All.mx\>\""}], "]"}], ";"}], "\n", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "make", " ", "the", " ", "mean", " ", "mesh", " ", "that", " ", "can", " ",
+     "be", " ", "used", " ", "for", " ", "visualization"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"high", "=", "2"}], ";"}], 
+  RowBox[{"(*", "mm", "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "lower", " ", "this", " ", "number", " ", "the", " ", "more", 
+    " ", "points", " ", "in", " ", "the", " ", "reference", " ", "mesh", " ", 
+    "so", " ", "more", " ", "detail"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"low", "=", "8"}], ";"}], 
+  RowBox[{"(*", "mm", "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "lower", " ", "this", " ", "number", " ", "the", " ", "more", 
+    " ", "points", " ", "on", " ", "the", " ", "deformable", " ", "mesh", " ",
+     "the", " ", "slower", " ", "the", " ", "methods", " ", "but", " ", 
+    "also", " ", "more", " ", "detail"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"voxTemplate", "=", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], ";"}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "low", " ", "and", " ", "high", " ", "resolution", " ", "average", " ", 
+    "muscle", " ", "mesh", " ", "to", " ", "define", " ", "common", " ", 
+    "coordinates"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dim", "=", 
+   RowBox[{"Dimensions", "@", "muscleMean"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"regionLow", "=", 
+   RowBox[{"MakeRegionMesh", "[", 
+    RowBox[{"muscleMean", ",", "voxTemplate", ",", "low"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"region", "=", 
+    RowBox[{"MakeRegionMesh", "[", 
+     RowBox[{"muscleMean", ",", "voxTemplate", ",", "high"}], "]"}]}], ";"}], 
+  "\n", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "project", " ", "points", " ", "from", " ", "low", " ", "on", " ", "high", 
+    " ", "quality", " ", "mesh"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"points", "=", 
+   RowBox[{
+    RowBox[{"RegionNearest", "[", "region", "]"}], "[", 
+    RowBox[{"MeshCoordinates", "@", "regionLow"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"cells", "=", 
+    RowBox[{"MeshCells", "[", 
+     RowBox[{"regionLow", ",", "2"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"create", " ", "the", " ", "muscle", " ", "model"}], "*)"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "calculate", " ", "the", " ", "mean", " ", "muscle", " ", "shape"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"meanPoints", "=", 
+    RowBox[{"Mean", "[", "pointsAll", "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "subtract", " ", "the", " ", "mean", " ", "coordinates", " ", "to", " ", 
+    "get", " ", "the", " ", "variation", " ", "per", " ", "point", " ", "and",
+     " ", "vectorize"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"variation", "=", 
+    RowBox[{"Transpose", "@", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"#", "-", "meanPoints"}], "&"}], "/@", "pointsAll"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"2", ",", "3"}], "}"}]}], "]"}]}]}], ";"}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"get", " ", "shape", " ", "eigensystem"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"val", ",", "vec"}], "}"}], "=", 
+    RowBox[{"Eigensystem", "[", 
+     RowBox[{"Covariance", "[", "variation", "]"}], "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "find", " ", "the", " ", "maximum", " ", "number", " ", "of", " ", 
+    "relevant", " ", "vectors"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"nvec", "=", 
+   RowBox[{"First", "@", 
+    RowBox[{"Last", "@", 
+     RowBox[{"Position", "[", 
+      RowBox[{
+       RowBox[{"UnitStep", "[", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"Accumulate", "[", "val", "]"}], "/", 
+           RowBox[{"Total", "[", "val", "]"}]}], ")"}], "-", "0.999"}], "]"}],
+        ",", "0"}], "]"}]}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"vecMat", "=", 
+    RowBox[{"vec", "[", 
+     RowBox[{"[", 
+      RowBox[{";;", "nvec"}], "]"}], "]"}]}], ";"}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "fit", " ", "each", " ", "muscle", " ", "with", " ", "the", " ", "model"}],
+    "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"numbVecs", "=", "15"}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "perform", " ", "all", " ", "the", " ", "fits", " ", "and", " ", 
+    "generate", " ", "all", " ", "the", " ", "meshes"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fittedVectors", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"FitVariationVec", "[", 
+      RowBox[{"#", ",", "vecMat", ",", "numbVecs"}], "]"}], "&"}], "/@", 
+    "variation"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"fittedPoints", "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"FitVariationPoints", "[", 
+       RowBox[{"#", ",", "meanPoints", ",", "vecMat", ",", "numbVecs"}], 
+       "]"}], "&"}], "/@", "variation"}]}], ";"}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "define", " ", "the", " ", "distance", " ", "function", " ", "and", " ", 
+    "calculate", " ", "the", " ", "distance", " ", "of", " ", "each", " ", 
+    "muscle", " ", "to", " ", "the", " ", "mean", " ", "region"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"distanceFunction", "=", 
+   RowBox[{"RegionDistance", "[", "region", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"distances", "=", 
+    RowBox[{"distanceFunction", "/@", "fittedPoints"}]}], ";"}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "convert", " ", "all", " ", "the", " ", "distances", " ", "to", " ", 
+    "colors"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"MinMax", "[", "distances", "]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"distColor", "=", 
+    RowBox[{"Map", "[", 
+     RowBox[{
+      RowBox[{"ColorData", "[", "\"\<DarkRainbow\>\"", "]"}], ",", 
+      RowBox[{"Rescale", "[", "distances", "]"}], ",", 
+      RowBox[{"{", "2", "}"}]}], "]"}]}], ";"}], "\n", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "calculate", " ", "the", " ", "mean", " ", "distance", " ", "over", " ", 
+    "all", " ", "78", " ", "muscles"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"meanDistColor", "=", 
+    RowBox[{
+     RowBox[{"ColorData", "[", "\"\<DarkRainbow\>\"", "]"}], "/@", 
+     RowBox[{"Rescale", "[", 
+      RowBox[{"Mean", "[", "distances", "]"}], "]"}]}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Color", " ", "bar", " ", "legend"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"colorBar", "=", 
+    RowBox[{"BarLegend", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"\"\<DarkRainbow\>\"", ",", 
+        RowBox[{"MinMax", "[", "distances", "]"}]}], "}"}], ",", 
+      RowBox[{"LegendLabel", "->", "\"\<Distance [mm]\>\""}]}], "]"}]}], 
+   ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "show", " ", "all", " ", "the", " ", "individual", " ", "muscles", " ", 
+    "with", " ", "color", " ", "bar"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"adjustedImageSize", "=", "250"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Grid", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Show", "[", 
+         RowBox[{
+          RowBox[{"MakeColorMesh", "[", 
+           RowBox[{"points", ",", "cells", ",", "meanDistColor"}], "]"}], ",", 
+          RowBox[{"ImageSize", "->", "adjustedImageSize"}]}], "]"}], ",", 
+        RowBox[{"Show", "[", 
+         RowBox[{
+          RowBox[{"Legended", "[", 
+           RowBox[{
+            RowBox[{"MakeColorMesh", "[", 
+             RowBox[{"points", ",", "cells", ",", "meanDistColor"}], "]"}], 
+            ",", "colorBar"}], "]"}], ",", 
+          RowBox[{"ImageSize", "->", "adjustedImageSize"}]}], "]"}]}], "}"}], 
+      ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Show", "[", 
+         RowBox[{
+          RowBox[{"MakeColorMesh", "[", 
+           RowBox[{"points", ",", "cells", ",", "meanDistColor"}], "]"}], ",", 
+          RowBox[{"ImageSize", "->", "adjustedImageSize"}]}], "]"}], ",", 
+        RowBox[{"Show", "[", 
+         RowBox[{
+          RowBox[{"Legended", "[", 
+           RowBox[{
+            RowBox[{"MakeColorMesh", "[", 
+             RowBox[{"points", ",", "cells", ",", "meanDistColor"}], "]"}], 
+            ",", "colorBar"}], "]"}], ",", 
+          RowBox[{"ImageSize", "->", "adjustedImageSize"}]}], "]"}]}], 
+       "}"}]}], "}"}], ",", 
+    RowBox[{"Spacings", "->", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "7"}], ",", "0"}], "}"}]}]}], "]"}], " ", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "show", " ", "all", " ", "the", " ", "individual", " ", "muscles", " ", 
+    "with", " ", "color", " ", "bar"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"Manipulate", "[", 
+   RowBox[{
+    RowBox[{"Row", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Show", "[", 
+        RowBox[{
+         RowBox[{"Legended", "[", 
+          RowBox[{
+           RowBox[{"MakeColorMesh", "[", 
+            RowBox[{"points", ",", "cells", ",", 
+             RowBox[{"distColor", "[", 
+              RowBox[{"[", "i", "]"}], "]"}]}], "]"}], ",", "colorBar"}], 
+          "]"}], ",", 
+         RowBox[{"PlotLabel", "->", "\"\<using mean mesh\>\""}], ",", 
+         RowBox[{"ImageSize", "->", "300"}]}], "]"}], ",", 
+       RowBox[{"Show", "[", 
+        RowBox[{
+         RowBox[{"Legended", "[", 
+          RowBox[{
+           RowBox[{"MakeColorMesh", "[", 
+            RowBox[{
+             RowBox[{"pointsAll", "[", 
+              RowBox[{"[", "i", "]"}], "]"}], ",", "cells", ",", 
+             RowBox[{"distColor", "[", 
+              RowBox[{"[", "i", "]"}], "]"}]}], "]"}], ",", "colorBar"}], 
+          "]"}], ",", 
+         RowBox[{"PlotLabel", "->", "\"\<using local mesh\>\""}], ",", 
+         RowBox[{"ImageSize", "->", "300"}]}], "]"}]}], "}"}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"i", ",", "1", ",", 
+      RowBox[{"Length", "@", "pointsAll"}], ",", "1"}], "}"}]}], "]"}], 
+  "\n"}], "\n"}], "Input",
+ CellChangeTimes->{
+  3.919846892289034*^9, {3.919846924378355*^9, 3.9198471218420277`*^9}, {
+   3.919847235171913*^9, 3.919847275601837*^9}, {3.919847307412268*^9, 
+   3.919847425423244*^9}, {3.920103608714161*^9, 3.920103612013306*^9}, 
+   3.920375448555981*^9, {3.920375501551024*^9, 3.920375504958927*^9}, {
+   3.920376963365113*^9, 3.920376963942444*^9}, {3.92037701211936*^9, 
+   3.920377050302397*^9}, {3.92037720053637*^9, 3.920377201013922*^9}, {
+   3.921052215263964*^9, 3.921052215469887*^9}, {3.921052315241581*^9, 
+   3.9210523221205387`*^9}, {3.921052578371805*^9, 3.9210525785867176`*^9}, {
+   3.92106141136158*^9, 3.921061442549374*^9}, {3.921061582383337*^9, 
+   3.9210615824851*^9}, {3.921061757174155*^9, 3.921061758108404*^9}, {
+   3.921061821653122*^9, 3.921061821931504*^9}, {3.921073582750178*^9, 
+   3.921073608019903*^9}, 3.921073774718031*^9, 3.921092385815136*^9, {
+   3.921092437009495*^9, 3.9210924461208935`*^9}, {3.921136686176193*^9, 
+   3.921136686354721*^9}, {3.9211368002882805`*^9, 3.921136800551251*^9}, {
+   3.921136862851557*^9, 3.921136865363056*^9}, {3.921136911432585*^9, 
+   3.921136911563719*^9}, {3.921626633279419*^9, 
+   3.9216266559842186`*^9}},ExpressionUUID->"8e4f3143-9f08-2548-a94b-\
+8ad0176b8d17"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1141.2, 574.8},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+Magnification:>0.5 Inherited,
+FrontEndVersion->"14.0 for Microsoft Windows (64-bit) (December 12, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"3c97d1e8-85ab-5e4f-933b-cc8fb9d5cf35"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 387, 7, 24, "Input",ExpressionUUID->"f5f94238-269e-3c4a-8067-74d9300eb207"],
+Cell[948, 29, 436, 7, 18, "Input",ExpressionUUID->"eef33ce1-5ce2-7f47-8ead-7e1345c7169e"],
+Cell[CellGroupData[{
+Cell[1409, 40, 300, 5, 27, "Subsection",ExpressionUUID->"ab686e92-1a30-1342-8e8f-1e5c993090e2"],
+Cell[1712, 47, 10748, 267, 281, "Input",ExpressionUUID->"aa992fba-9545-1646-abda-2a736dbc2980"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12497, 319, 157, 3, 27, "Subsection",ExpressionUUID->"97da6f15-58f7-8047-80e4-e18bb06f23bb"],
+Cell[12657, 324, 1448, 26, 109, "Text",ExpressionUUID->"82a7b0bb-4141-1e46-a44a-60eb665fab30"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[14142, 355, 268, 4, 21, "Subsection",ExpressionUUID->"8bcb4523-c6ff-dc4b-9fa6-136904a573c1"],
+Cell[CellGroupData[{
+Cell[14435, 363, 161, 3, 23, "Subsubsection",ExpressionUUID->"0ad8ebe0-a6f6-1a4d-9670-a1fad03ff446"],
+Cell[14599, 368, 452, 11, 24, "Input",ExpressionUUID->"917f9001-a1e9-8147-bdf4-36f82cd3d9f4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15088, 384, 328, 5, 23, "Subsubsection",ExpressionUUID->"2bc90720-4079-0948-805d-3f9e218dbccf"],
+Cell[15419, 391, 1332, 33, 53, "Input",ExpressionUUID->"60057f34-ed57-7d42-ae80-47425fcfe222"],
+Cell[16754, 426, 5275, 121, 186, "Input",ExpressionUUID->"c58ad0c3-0751-a04c-a25b-969e4a62056e"],
+Cell[22032, 549, 530, 8, 18, "Input",ExpressionUUID->"a1755af0-564c-3548-9ceb-b1ae365ea973"],
+Cell[22565, 559, 409, 9, 18, "Input",ExpressionUUID->"2c2bc114-ca77-7546-ada2-34447c9f3427"],
+Cell[22977, 570, 481, 9, 18, "Input",ExpressionUUID->"9c688657-1628-2a46-9c84-2423812fe670"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23495, 584, 262, 4, 23, "Subsubsection",ExpressionUUID->"1a7ebe5a-04e7-3547-b1bd-8d61d8e110d2"],
+Cell[23760, 590, 7079, 168, 233, "Input",ExpressionUUID->"c90c6c6c-9a8a-724c-9146-f8ce5c104573"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30876, 763, 457, 7, 23, "Subsubsection",ExpressionUUID->"ced42770-2b11-e947-95bd-8feeede855df"],
+Cell[31336, 772, 281, 6, 18, "Input",ExpressionUUID->"073f30f3-8696-5c4f-b118-95ba855b9885"],
+Cell[31620, 780, 2659, 55, 53, "Input",ExpressionUUID->"495c4b5e-1793-7b4e-b7c5-be8fc239c60b"],
+Cell[34282, 837, 758, 12, 25, "Input",ExpressionUUID->"a74cb093-4b42-0a47-9327-0835f946a1f2"],
+Cell[35043, 851, 663, 11, 18, "Input",ExpressionUUID->"05e8dc89-1671-704c-9c63-081e0cc6ca4d"],
+Cell[35709, 864, 364, 6, 18, "Input",ExpressionUUID->"c7ab5144-1c81-2542-8cce-551cb73ca66b"],
+Cell[36076, 872, 594, 11, 18, "Input",ExpressionUUID->"4ab67870-92bd-1640-bdd9-22df7d7e3de1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[36707, 888, 357, 7, 23, "Subsubsection",ExpressionUUID->"2f85256e-9c9a-0a49-88f3-1f343a4ca734"],
+Cell[37067, 897, 5116, 115, 205, "Input",ExpressionUUID->"504875fe-5cb0-444b-88f4-f6c0b7ea43ae"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42232, 1018, 365, 6, 27, "Subsection",ExpressionUUID->"d302b4eb-ff67-484d-ba70-7810e044ba07"],
+Cell[CellGroupData[{
+Cell[42622, 1028, 220, 4, 23, "Subsubsection",ExpressionUUID->"881935e1-61bd-4548-b948-113ddf47e2d0"],
+Cell[42845, 1034, 557, 8, 24, "Input",ExpressionUUID->"90044ba4-237d-854c-b162-e413a6bde530"],
+Cell[43405, 1044, 2638, 53, 72, "Input",ExpressionUUID->"59656820-1834-7444-9630-d9518474a65f"],
+Cell[46046, 1099, 246, 5, 18, "Input",ExpressionUUID->"6a9772e9-9122-9f40-92d7-7810d23a87bb"],
+Cell[46295, 1106, 1857, 40, 62, "Input",ExpressionUUID->"3be0a59f-60da-1849-a762-79ced72a0080"],
+Cell[48155, 1148, 858, 19, 24, "Input",ExpressionUUID->"81c3724d-42ed-8a49-92cf-50015d769488"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[49050, 1172, 279, 4, 23, "Subsubsection",ExpressionUUID->"dc726fa1-12f5-cb48-ac9c-4e9fda7e3626"],
+Cell[49332, 1178, 291, 6, 18, "Input",ExpressionUUID->"fd1fc4aa-9d2b-6e47-ab00-4dd1f7329f9e"],
+Cell[49626, 1186, 4660, 115, 148, "Input",ExpressionUUID->"e0fbf094-ac34-ca46-84d3-0831656080c3"],
+Cell[54289, 1303, 339, 6, 18, "Input",ExpressionUUID->"5482ca1e-63f7-e448-8f8c-44b30e93ac46"],
+Cell[54631, 1311, 273, 6, 18, "Input",ExpressionUUID->"5867f2b3-02b7-724b-860e-33b98cfaa03d"],
+Cell[54907, 1319, 2191, 56, 53, "Input",ExpressionUUID->"0777ff3e-eb4e-4845-9f1a-3e02c154f6d8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[57135, 1380, 359, 6, 23, "Subsubsection",ExpressionUUID->"25826979-8621-ba45-80f1-a19bed3d922a"],
+Cell[57497, 1388, 4850, 108, 100, "Input",ExpressionUUID->"f4ed32b8-8f1b-644f-9579-713049ff1175"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[62384, 1501, 301, 7, 23, "Subsubsection",ExpressionUUID->"799910fe-48f3-654e-b929-a8d7fc8e4077"],
+Cell[62688, 1510, 7554, 163, 243, "Input",ExpressionUUID->"b5951b21-8a28-384f-861d-84547432da96"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70291, 1679, 415, 6, 27, "Subsection",ExpressionUUID->"0d0784a2-c693-d040-95be-54c682c212bb"],
+Cell[CellGroupData[{
+Cell[70731, 1689, 302, 5, 23, "Subsubsection",ExpressionUUID->"ec5b8dc6-5d66-9b46-abd5-8374383d166a"],
+Cell[71036, 1696, 582, 13, 18, "Input",ExpressionUUID->"14f68ddf-eead-1e41-bc4d-ca7dc3521aa4"],
+Cell[71621, 1711, 334, 5, 24, "Input",ExpressionUUID->"516d3041-ee0b-2846-af6a-8fca24f6891e"],
+Cell[71958, 1718, 2565, 65, 91, "Input",ExpressionUUID->"dc58482a-494c-b94f-ae77-3f255d7f3a72"],
+Cell[74526, 1785, 154, 3, 18, "Input",ExpressionUUID->"45eee126-fe47-204d-b5df-6de2581a6dbc"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[74717, 1793, 349, 5, 23, "Subsubsection",ExpressionUUID->"bbd298a2-67bb-3d47-b10c-2ed61fb610e4"],
+Cell[75069, 1800, 980, 26, 43, "Input",ExpressionUUID->"9fb74780-35ed-a245-81b2-b32d44908e2e"],
+Cell[76052, 1828, 1462, 35, 43, "Input",ExpressionUUID->"52e861a4-f7c9-8d4d-8e36-a1acb0523173"],
+Cell[77517, 1865, 2781, 73, 91, "Input",ExpressionUUID->"7b5bc30d-30e2-2549-868d-3ef32f74d12e"],
+Cell[80301, 1940, 1105, 29, 24, "Input",ExpressionUUID->"a4f21efe-bedd-0549-aec4-253f1d2f17ce"],
+Cell[81409, 1971, 1463, 40, 43, "Input",ExpressionUUID->"190fba1b-e3ee-4344-9d76-5d1d0b1986fb"],
+Cell[82875, 2013, 280, 5, 18, "Input",ExpressionUUID->"f8edaf11-0ee0-5842-98e1-f0f12b6003c8"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[83204, 2024, 227, 4, 27, "Subsection",ExpressionUUID->"08292758-ccd1-2b45-80d4-ad6d4b4f19ff"],
+Cell[CellGroupData[{
+Cell[83456, 2032, 355, 7, 23, "Subsubsection",ExpressionUUID->"a1959d98-a117-104f-bcf4-150fed27038a",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[83814, 2041, 8770, 186, 424, "Input",ExpressionUUID->"fd162a76-ffef-4f46-9629-7f742cd4c1cd",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[92621, 2232, 218, 4, 23, "Subsubsection",ExpressionUUID->"4e6df1b9-64a6-6142-8bc8-8ad13275edcf"],
+Cell[CellGroupData[{
+Cell[92864, 2240, 3043, 73, 53, "Input",ExpressionUUID->"ffea2667-58b9-4c4b-84a0-6165822f4688",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[95910, 2315, 410, 8, 23, "Subsubsection",ExpressionUUID->"91b3bae1-4cbd-d541-be8b-8d5e97c429cb",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[96323, 2325, 394, 9, 18, "Input",ExpressionUUID->"48a1014c-3aac-b141-8d37-95ba4b545814",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[96766, 2340, 252, 4, 23, "Subsubsection",ExpressionUUID->"07f20c00-c9d8-ea4b-b62b-108cb3c6c747"],
+Cell[97021, 2346, 14800, 319, 576, "Input",ExpressionUUID->"cba23fcb-6848-6643-8531-700ef105cace"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[111858, 2670, 325, 6, 23, "Subsubsection",ExpressionUUID->"b51d62ed-8315-cb46-a850-503f74893c1a"],
+Cell[112186, 2678, 12376, 278, 528, "Input",ExpressionUUID->"509eae85-c40a-664d-b23f-f52a02129942"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[124599, 2961, 358, 7, 23, "Subsubsection",ExpressionUUID->"549d4f4a-a864-ea4a-99ae-fecc6c44c81b"],
+Cell[124960, 2970, 305, 6, 18, "Input",ExpressionUUID->"a30958c9-d6a9-4344-9c6c-71dc3c8101b4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[125302, 2981, 405, 7, 23, "Subsubsection",ExpressionUUID->"5a5356d4-e7fc-c043-b50f-1b8c3fc40991"],
+Cell[125710, 2990, 15848, 385, 576, "Input",ExpressionUUID->"9a3d600c-7d34-7e48-9e1f-56f594df7dd4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[141595, 3380, 646, 10, 23, "Subsubsection",ExpressionUUID->"c9bf8fdc-f25b-d248-b6ee-182be3d5e7b2"],
+Cell[142244, 3392, 12334, 327, 576, "Input",ExpressionUUID->"8e4f3143-9f08-2548-a94b-8ad0176b8d17"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
